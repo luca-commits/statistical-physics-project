@@ -42,7 +42,7 @@ struct MDParameters {
     int numberAtoms;
     double atomicMass;
     SimulationType mdType;
-    ChainSymType chainMdType;
+    ChainSimType chainMdType;
     double boxSize[3];
     int numberMDSteps;
     double initialTime;
