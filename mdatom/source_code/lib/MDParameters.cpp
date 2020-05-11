@@ -16,7 +16,6 @@ MDParameters MDParameters::defaultParameters() {
     p.randomSeed = 42;
     p.initialTemperature = 1.0;
     p.mdType = SimulationType::constantEnergy;
-	p.chainMdType = SimulationType::complete;
     p.targetTemperature = 1.0;
     p.temperatureCouplingTime = 1.0;
     p.numberMDSteps = 1000;
@@ -120,26 +119,3 @@ int simulationTypeToInt(SimulationType ntt) {
             return 1;
     }
 }
-
-ChainSimType chainSimTypeFromInt(int ntt){
-	if (ntt == 0)
-		return ChainSimType::noChains;
-	if (ntt == 1)
-		return ChainSimType::noDyhedrals;
-	if (ntt == 2)
-		return ChainSimType::complete;
-    
-	throw std::runtime_error("Invalid value for MDType");
-}
-
-int ChinSimypeToInt(ChainSimType ntt) {
-    switch (ntt) {
-        case ChainSimType::noChains:
-            return 0;
-        case ChainSimType::noDyhedrals:
-            return 1;
-		case ChainSimType::complete:
-			return 2;
-    }
-}
-
