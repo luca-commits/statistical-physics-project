@@ -27,9 +27,9 @@ enum class SimulationType {
 };
 
 enum class ChainSimType {
-	noChains,			//normal md simulation
-	noDyhedrals,		//only bond and angle terms
-	complete			//bond, angle and torsion terms
+    noChains,			//normal md simulation
+    noDihedrals,		//only bond and angle terms
+    complete			//bond, angle and torsion terms
 };
 
 /*!
@@ -42,7 +42,7 @@ struct MDParameters {
     int numberAtoms;
     double atomicMass;
     SimulationType mdType;
-	ChainSymType chainMdType;
+    ChainSymType chainMdType;
     double boxSize[3];
     int numberMDSteps;
     double initialTime;
