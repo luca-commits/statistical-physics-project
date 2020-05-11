@@ -15,22 +15,20 @@ void CoordinatesVelocitiesAndBondsInitializer::initialize(std::vector<double>& p
     // Initialize positions and velocities as usual
     this->initialize(positions, velocities);
     
-    // Load bonds file if needed
+    // Check whether we are simulating a chain and using an automatically generated mesh
     if (par.chainMdType != ChainSimType::noChains &&
         par.xvInitialization != InitialXVGenerator::generateInitialX) {
         fin_bonds.open(fileName_bonds, std::ios::in);
         if (fin_bonds.bad())
             throw std::runtime_error("can't open" + fileName_bonds);
-    }
-    
-    if (par.chainMdType != ChainSimType::noChains &&
-        par.xvInitialization != InitialXVGenerator::generateInitialX) {
+        
         unsigned int nat = par.numberAtoms;
         
         // Read in number of bonds
         unsigned int nbonds;
         fin_bonds >> nbonds;
         
+        // Throw exception if there are too many bonds
         if (nbonds > nat * nat)
             throw std::runtime_error("NBONDS (" + fileName_bonds + ") = " + 
                                      std::tostring(nbonds) + " > NATOM^2");
@@ -43,6 +41,9 @@ void CoordinatesVelocitiesAndBondsInitializer::initialize(std::vector<double>& p
             
             bonds.push_back(std::make_pair<unsigned int, unsigned int>(i, j));
         }
+    } else if(par.chainMdType != ChainSimType::noChains &&
+              par.xvInitialization == InitialXVGenerator::generateInitialX) {
+        throw std::runtime_error("Automatic generation of chains not supported!");
     } else {
         bonds.clear(); // make sure no bond terms are calculated if not needed
     }
