@@ -34,6 +34,7 @@ class MDSimulation {
     Timer timer;
     MDParameters parameters;
     std::vector<double> positions, velocities;
+    std::vector<std::pair<int,int>> bonds; //contains all pairs of bonded atoms in the chain
 };
 
 #endif // MDSIMULATION_H
