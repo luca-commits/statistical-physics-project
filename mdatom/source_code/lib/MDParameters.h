@@ -26,6 +26,11 @@ enum class SimulationType {
     constantTemperature
 };
 
+enum class ChainSimType {
+    noChains,			//normal md simulation
+    noDihedrals,		//only bond and angle terms
+    complete			//bond, angle and torsion terms
+};
 /*!
  * This struct contains the parameters for a MD simulation for the Lennard-Jones model.
  */
@@ -36,6 +41,7 @@ struct MDParameters {
     int numberAtoms;
     double atomicMass;
     SimulationType mdType;
+    ChainSimType chainMdType;
     double boxSize[3];
     int numberMDSteps;
     double initialTime;

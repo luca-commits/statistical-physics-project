@@ -51,5 +51,9 @@ bool ParameterValidityChecker::checkValidity() {
         errorMessage = "Reading velocities from file but overwriting them (InitialTemperature >= 1e-6)";
         return false;
     }
+    if (par.chainMdType > 2){
+      return false;
+    }
+
     return true;
 }
