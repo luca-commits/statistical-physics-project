@@ -14,15 +14,17 @@ class ChainInteractionCalculator : public InteractionCalculator{
       explicit ChainInteractionCalculator(const MDParameters& parameters);  //constructor
       
       void calculateInteraction (int i, int j, const std::vector<double>& positions
-                                 std::vector<double>& forces, const std::vector<std::pair>&  bonds);
+                                 std::vector<double>& forces, const std::vector<std::pair<unsigned int, unsigned int>&  bonds);
       
       void calculateAngle(int i, int j, int l, const std::vector<double>& positions,
-                          const std::vector<std::pair>& bonds);
+                          const std::vector<std::pair<unsigned int, unsigned int>& bonds);
 
       void calculateDihedral (int i, int j, int k, int l, const std::vector<double>& positions,
-                          const std::vector<std::pair>& bonds); 
+                          const std::vector<std::pair<unsigned int, unsigned int>& bonds); 
     
-
+    private:
+      double angle_ijk;
+      double dihedral_ijkl;
 
 
 
