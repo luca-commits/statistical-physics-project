@@ -63,6 +63,8 @@ struct MDParameters {
     bool trajectoryOutput;
     TrajectoryFileFormat trajectoryOutputFormat;
     int trajectoryOutputInterval;
+    double gamma;
+    double theta;
 };
 
 FinalCoordinateFileFormat finalCoordinateFileFormatFromInt(int ntxo);

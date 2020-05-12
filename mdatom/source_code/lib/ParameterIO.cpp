@@ -45,8 +45,7 @@ MDParameters ParameterIO::readParameters(const std::string &fileName) {
     fin.ignore();
     getline(fin, dummy);
     fin >> par.randomSeed
-        >> cmdti;
-
+        `
     fin.ignore();
     getline(fin, dummy);
     fin >> ntxi
@@ -76,6 +75,12 @@ MDParameters ParameterIO::readParameters(const std::string &fileName) {
     fin >> ntwxm
         >> ntpw
         >> par.trajectoryOutputInterval;
+
+    fin.ignore();
+    getline(fin, dummy);
+    fin >> cmdti
+        >> theta
+        >> gamma;
     
     par.xvInitialization = initialXVGeneratorFromInt(ntxi);
     par.finalXVOutput = finalCoordinateFileFormatFromInt(ntxo);
