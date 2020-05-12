@@ -28,7 +28,7 @@ enum class SimulationType {
 
 enum class ChainSimType {
     noChains,			//normal md simulation
-    noDihedrals,		//only bond and angle terms
+    noAngles,		    //only bond and angle terms
     complete			//bond, angle and torsion terms
 };
 /*!
@@ -76,5 +76,8 @@ int trajectoryFileFormatToInt(TrajectoryFileFormat ntpw);
 
 SimulationType simulationTypeFromInt(int ntt);
 int simulationTypeToInt(SimulationType ntt);
+
+ChainSimType chainSimTypeFromInt(int ntt);
+int ChainSimTypeToInt (ChainSimType ntt);
 
 #endif // MDPARAMETERS_H

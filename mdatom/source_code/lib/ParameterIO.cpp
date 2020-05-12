@@ -13,6 +13,7 @@ MDParameters ParameterIO::readParameters(const std::string &fileName) {
 
     MDParameters par;
     int ntxi, ntxo, ntpw, ntt, ntwxm;
+    int cmdti; //chainMdTypeInt
     std::string dummy;
 
     getline(fin, dummy);
@@ -44,7 +45,7 @@ MDParameters ParameterIO::readParameters(const std::string &fileName) {
     fin.ignore();
     getline(fin, dummy);
     fin >> par.randomSeed
-        >> par.chainMdType;
+        >> cmdti;
 
     fin.ignore();
     getline(fin, dummy);
@@ -75,12 +76,13 @@ MDParameters ParameterIO::readParameters(const std::string &fileName) {
     fin >> ntwxm
         >> ntpw
         >> par.trajectoryOutputInterval;
-
+    
     par.xvInitialization = initialXVGeneratorFromInt(ntxi);
     par.finalXVOutput = finalCoordinateFileFormatFromInt(ntxo);
     par.trajectoryOutput = ntwxm > 0;
     par.trajectoryOutputFormat = trajectoryFileFormatFromInt(ntpw);
     par.mdType = simulationTypeFromInt(ntt);
+    par.chainMdType = chainSimTypeFromInt(cmdti);
 
     return par;
 }

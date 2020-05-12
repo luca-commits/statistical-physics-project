@@ -125,18 +125,18 @@ ChainSimType chainSimTypeFromInt(int ntt){
     if (ntt == 0)
         return ChainSimType::noChains;
     else if (ntt == 1)
-        return ChainSimType::noDyhedrals;
+        return ChainSimType::noAngles;
     else if (ntt == 2)
         return ChainSimType::complete;
     else
         throw std::runtime_error("Invalid value for Chain-MDType");
 }
 
-int ChainSimypeToInt(ChainSimType ntt) {
+int ChainSimTypeToInt(ChainSimType ntt) {
     switch (ntt) {
         case ChainSimType::noChains:
             return 0;
-        case ChainSimType::noDyhedrals:
+        case ChainSimType::noAngles:
             return 1;
 		case ChainSimType::complete:
 			return 2;
