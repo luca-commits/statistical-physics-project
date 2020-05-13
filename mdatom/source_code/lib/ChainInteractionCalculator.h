@@ -15,8 +15,9 @@ class ChainInteractionCalculator : public InteractionCalculator{
       explicit ChainInteractionCalculator(const MDParameters& parameters);  //constructor
       
       //loops over all atoms and adds angle contributions to E_pot by calling calculateInteractionA
-      void calculateA (const std::vector<double>& positions, const std::vector<std::pair<int,int>> bonds,
-                                const std::vector<double>& forces);
+      //the name doesn't make too much sense on its own, it's just to show that it is a parallel to 
+      //InteractionCalculator.h 
+      void calculateA (const std::vector<double>& positions, const std::vector<std::pair<int,int>> bonds);
     private:
 
       void calculateAngle(int i, int j, int l, const std::vector<double>& positions,
@@ -28,7 +29,7 @@ class ChainInteractionCalculator : public InteractionCalculator{
                                 const std::vector<double>& forces);
       //sets the angle by calling calculateAngle, then calls calculatePotential
       void calculateInteractionA (int i, int k, int j, const std::vector<double>& positions,
-                                 std::vector<double>& forces, const std::vector<std::pair<int, int>>&  bonds);
+                                  const std::vector<std::pair<int, int>>&  bonds);
       //calculates only the potential contribution of the angle 
       void calculatePotentialA();
       //set the dihedral angle + does all calculateInteraction does in the base class

@@ -97,4 +97,12 @@ void ChainInteractionCalculator::calculateDihedral (int i, int j, int k, int l, 
   dihedral_ijkl = std::atan2(y, x);
 }
 
+void ChainInteractionCalculator::calculateA (const std::vector<double>& positions, 
+                                             const std::vector<std::pair<int,int>> bonds){
+    resetVariablesToZero();
+
+    for(int i = 1; i < par.numberAtoms - 1; ++i){
+        caluclateInteractionA(i);
+    }
+}
 
