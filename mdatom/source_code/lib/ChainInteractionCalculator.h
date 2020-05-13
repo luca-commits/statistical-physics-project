@@ -1,7 +1,7 @@
 #ifndef CHAININTERACTIONCALCULATOR_H
 #define CHAININTERACTIONCALCULATOR_H
 
-#include "IteractionCalculator.h"
+#include "InteractionCalculator.h"
 #include <utility>
 
 
