@@ -22,14 +22,15 @@ class InteractionCalculator{
     double getVirial() const;
     const InstantaneousRadialDistribution& getInstantaneousRadialDistribution() const;
 
-  private:
-    void initializeValues();
-    void resetVariablesToZero(std::vector<double>& forces);
+  protected:
+    virtual void initializeValues();
+    virtual void resetVariablesToZero(std::vector<double>& forces);
     void applyPeriodicBoundaryConditions(int i, int j, const std::vector<double>& positions);
     void calculateSquaredDistance();
-    void calculatePotentialAndForceMagnitude();
+    virtual void calculatePotentialAndForceMagnitude();
     void calculateForceAndVirialContributions(int i, int j, std::vector<double>& forces);
-    void calculateInteraction(int i, int j, const std::vector<double>& positions, std::vector<double>& forces);
+    virtual void calculateInteraction(int i, int j, const std::vector<double>& positions,
+                                      std::vector<double>& forces);
 
     const MDParameters& par;
     InstantaneousRadialDistribution radialDistribution;
