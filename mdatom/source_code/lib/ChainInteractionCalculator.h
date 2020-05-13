@@ -15,7 +15,7 @@ class ChainInteractionCalculator : public InteractionCalculator{
       explicit ChainInteractionCalculator(const MDParameters& parameters);  //constructor
       
       //loops over all atoms and adds angle contributions to E_pot by calling calculateInteractionA
-      void calculateA (const std::vector<double>& positions, const std::vector<std::pair<int>> bonds,
+      void calculateA (const std::vector<double>& positions, const std::vector<std::pair<int,int>> bonds,
                                 const std::vector<double>& forces);
     private:
 
@@ -27,7 +27,7 @@ class ChainInteractionCalculator : public InteractionCalculator{
       void calculateA (const std::vector<double>& positions, const std::vector<std::pair<int, int>> bonds,
                                 const std::vector<double>& forces);
       //sets the angle by calling calculateAngle, then calls calculatePotential
-      void calculateInteractionA (int i, int k, int j, const std::vector<double>& positions
+      void calculateInteractionA (int i, int k, int j, const std::vector<double>& positions,
                                  std::vector<double>& forces, const std::vector<std::pair<int, int>>&  bonds);
       //calculates only the potential contribution of the angle 
       void calculatePotentialA();
@@ -35,10 +35,10 @@ class ChainInteractionCalculator : public InteractionCalculator{
       void calculateInteraction (int i, int j, const std::vector<double>& positions,
                                  const std::vector<std::pair<int, int>>& bonds, const std::vector<double> forces);
       //calculates the potential contribution from Coulomb interaction, bond terms and dihedral terms
-      void calculatePotentialAndForceMagnitude override();
+      void calculatePotentialAndForceMagnitude () override;
 
-      void resetVariablesToZero override();
-      void initializeVariables override();
+      void resetVariablesToZero(std::vector<double>& forces) override;
+      void initializeValues () override;
 
 
       double theta0;
