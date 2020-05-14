@@ -32,7 +32,7 @@ class ChainInteractionCalculator : public InteractionCalculator{
                                   const std::vector<std::pair<int, int>>&  bonds);
       //calculates only the potential contribution of the angle 
       void calculatePotentialA();
-      //set the dihedral angle + does all calculateInteraction does in the base class
+      //set the dihedral angle + does everything that calculateInteraction does (in the base class)
       void calculateInteraction (int i, int j, const std::vector<double>& positions,
                                  const std::vector<std::pair<int, int>>& bonds, const std::vector<double> forces);
       //calculates the potential contribution from Coulomb interaction, bond terms and dihedral terms
