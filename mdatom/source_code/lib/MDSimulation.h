@@ -35,6 +35,7 @@ class MDSimulation {
     Timer timer;
     MDParameters parameters;
     std::vector<double> positions, velocities;
+    std::vector<std::vector<bool>> bonds;//bonds[i][j] = 1 if atom i is bonded to atom j
 };
 
 #endif // MDSIMULATION_H
