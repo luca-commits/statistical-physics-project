@@ -27,7 +27,7 @@ class ChainInteractionCalculator : public InteractionCalculator{
       //loops over all atoms and adds angle contributions to E_pot by calling calculateInteractionA
       void calculateA (const std::vector<double>& positions, const std::vector<std::pair<int, int>> bonds,
                                 const std::vector<double>& forces);
-      //sets the angle by calling calculateAngle, then calls calculatePotential
+      //sets the angle by calling calculateAngle, then calls calculatePotentialA
       void calculateInteractionA (int i, int k, int j, const std::vector<double>& positions,
                                   const std::vector<std::pair<int, int>>&  bonds);
       //calculates only the potential contribution of the angle 
@@ -38,7 +38,9 @@ class ChainInteractionCalculator : public InteractionCalculator{
       //calculates the potential contribution from Coulomb interaction, bond terms and dihedral terms
       void calculatePotentialAndForceMagnitude () override;
 
-      void resetVariablesToZero(std::vector<double>& forces) override;
+      //This function is called by InteractionCalculatorA. Sice calculateInteractionA only adds to
+      // the potential, only the latter has to be reset to zero
+      void resetPotentialToZero(std::vector<double>& forces);
       void initializeValues () override;
 
 
