@@ -24,12 +24,13 @@ class ChainInteractionCalculator : public InteractionCalculator{
                           const std::vector<std::pair<int, int>>& bonds);
       void calculateDihedral (int i, int j, int k, int l, const std::vector<double>& positions,
                               const std::vector<std::pair<int, int>>& bonds); 
+      //only works for chains
       //loops over all atoms and adds angle contributions to E_pot by calling calculateInteractionA
-      void calculateA (const std::vector<double>& positions, const std::vector<std::pair<int, int>> bonds,
-                                const std::vector<double>& forces);
+      //only need to loop over one variable since every atom has one angle (correct me if I'm wrong)
+      void calculateA (const std::vector<double>& positions, const std::vector<std::vector<bool>> bonds);
       //sets the angle by calling calculateAngle, then calls calculatePotentialA
-      void calculateInteractionA (int i, int k, int j, const std::vector<double>& positions,
-                                  const std::vector<std::pair<int, int>>&  bonds);
+      void calculateInteractionA (int i, const std::vector<double>& positions,
+                                  const std::vector<std::vector<bool>>&  bonds);
       //calculates only the potential contribution of the angle 
       void calculatePotentialA();
       //set the dihedral angle + does everything that calculateInteraction does (in the base class)
@@ -40,7 +41,7 @@ class ChainInteractionCalculator : public InteractionCalculator{
 
       //This function is called by InteractionCalculatorA. Sice calculateInteractionA only adds to
       // the potential, only the latter has to be reset to zero
-      void resetPotentialToZero(std::vector<double>& forces);
+      void resetPotentialToZero();
       void initializeValues () override;
 
 

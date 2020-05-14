@@ -68,6 +68,8 @@ void ChainInteractionCalculator::calculateDihedral (int i, int j, int k, int l, 
   const std::vector<std::pair<unsigned int, unsigned int>& bonds) {
   
   // TODO: Implement check whether bonds between four atoms exist.
+  // Luca: if you call calculateDihedral between four atoms then there is a bond between j and k,
+  //       this check has to be done in the function InteractionCalculator
   
   // Calculations taken from 
   // https://math.stackexchange.com/questions/47059/how-do-i-calculate-a-dihedral-angle-given-cartesian-coordinates
@@ -98,11 +100,16 @@ void ChainInteractionCalculator::calculateDihedral (int i, int j, int k, int l, 
 }
 
 void ChainInteractionCalculator::calculateA (const std::vector<double>& positions, 
-                                             const std::vector<std::pair<int,int>> bonds){
+                                             const std::vector<std::vector<bool>> bonds){
     resetPotentialToZero();
 
     for(int i = 1; i < par.numberAtoms - 1; ++i){
-        caluclateInteractionA(i, );
+        calculateInteractionA(i, positions, bonds);
     }
 }
 
+void ChainInteractionCalculator::calculateInteractionA(int i, const std::vector<double>& positions, 
+                                                              const std::vector<std::vector<bool>> bonds){
+    calculateAngle(i-1, i, i + 1, positions, bonds);
+    calcualtePotentialA();
+}
