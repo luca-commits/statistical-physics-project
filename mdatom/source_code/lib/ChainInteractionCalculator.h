@@ -17,13 +17,13 @@ class ChainInteractionCalculator : public InteractionCalculator{
       //loops over all atoms and adds angle contributions to E_pot by calling calculateInteractionA
       //the name doesn't make too much sense on its own, it's just to show that it is a parallel to 
       //InteractionCalculator.h 
-      void calculateA (const std::vector<double>& positions, const std::vector<std::pair<int,int>> bonds);
+      void calculateA (const std::vector<double>& positions, const std::vector<std::vector<bool>>& bonds);
     private:
 
-      void calculateAngle(int i, int j, int l, const std::vector<double>& positions,
-                          const std::vector<std::pair<int, int>>& bonds);
+      void calculateAngle(int i, int j, int k, const std::vector<double>& positions,
+                          const std::vector<std::vector<bool>>& bonds);
       void calculateDihedral (int i, int j, int k, int l, const std::vector<double>& positions,
-                              const std::vector<std::pair<int, int>>& bonds); 
+                              const std::vector<std::vector<bool>>& bonds); 
       //only works for chains
       //loops over all atoms and adds angle contributions to E_pot by calling calculateInteractionA
       //only need to loop over one variable since every atom has one angle (correct me if I'm wrong)
@@ -35,7 +35,7 @@ class ChainInteractionCalculator : public InteractionCalculator{
       void calculatePotentialA();
       //set the dihedral angle + does everything that calculateInteraction does (in the base class)
       void calculateInteraction (int i, int j, const std::vector<double>& positions,
-                                 const std::vector<std::pair<int, int>>& bonds, const std::vector<double> forces);
+                                 const std::vector<std::vector<bool>>& bonds, const std::vector<double> forces);
       //calculates the potential contribution from Coulomb interaction, bond terms and dihedral terms
       void calculatePotentialAndForceMagnitude () override;
 
@@ -51,7 +51,7 @@ class ChainInteractionCalculator : public InteractionCalculator{
       double dihedral_ijkl;
       double angle_ijk;
 
-      ChainSimulationType type;
+      ChainSimType type;
 };  
 
 #endif //CHAININTERACTIONCALCULATOR_H

@@ -43,29 +43,28 @@ double norm(int i, const std::vector<double>& pos) {
                    pos[3*i+2] * pos[3*i+2]);
 }
 
-void ChainInteractionCalculator::calculateAngle(int i, int j, int k, const std::vector<double>& pos,
-    const std::vector<std::pair<double, double>>& bonds) {
+void ChainInteractionCalculator::calculateAngle(int i, int j, int k, const std::vector<double>& positions,
+                          const std::vector<std::vector<bool>>& bonds) {
+    
   if (i == j || i == k || j == k) {
     angle_ijk = 0;
     return;
   }
   
-  bool foundFirstPair = std::any_of(bonds.begin(), bonds.end(),
-    [i, j](std::pair<double, double> b){ return b.first == i && b.second == j || b.first == j && b.first = i; });
-  bool foundSecPair = std::any_of(bonds.begin(), bonds.end(),
-    [i, j](std::pair<double, double> b){ return b.first == j && b.second == k || b.first == k && b.first = j; });
+  if (bonds[i][j] && bonds[j][k]) {
+    angle_ijk = 0;
+    return;
+  }
   
-  unsigned int 3i = 3*i, 3j = 3*j, 3k = 3*k;
-  
-  double r_ij = dist(i, j, pos);
-  double r_ik = dist(i, k, pos);
-  double r_jk = dist(j, k, pos);
+  double r_ij = dist(i, j, positions);
+  double r_ik = dist(i, k, positions);
+  double r_jk = dist(j, k, positions);
   
   angle_ijk = std::acos(r_ij * r_ij + r_jk * r_jk - r_ik * r_ik) / (2 * r_ij * r_jk);
 }
 
 void ChainInteractionCalculator::calculateDihedral (int i, int j, int k, int l, const std::vector<double>& pos,
-  const std::vector<std::pair<unsigned int, unsigned int>& bonds) {
+  const std::vector<std::vector<bool>>& bonds) {
   
   // TODO: Implement check whether bonds between four atoms exist.
   // Luca: if you call calculateDihedral between four atoms then there is a bond between j and k,
@@ -93,8 +92,8 @@ void ChainInteractionCalculator::calculateDihedral (int i, int j, int k, int l, 
   
   std::vector<double> m1 = cross(n1, b2);
   
-  double x = dot(n1, n2) / (norm(n1) * norm(n2));
-  double y = dot(m1, n2) / (norm(n1) * norm(b2) * norm(n2));
+  double x = dot(n1, n2) / (norm(0, n1) * norm(0, n2));
+  double y = dot(m1, n2) / (norm(0, n1) * norm(0, b2) * norm(0, n2));
   
   dihedral_ijkl = std::atan2(y, x);
 }
@@ -109,7 +108,7 @@ void ChainInteractionCalculator::calculateA (const std::vector<double>& position
 }
 
 void ChainInteractionCalculator::calculateInteractionA(int i, const std::vector<double>& positions, 
-                                                              const std::vector<std::vector<bool>> bonds){
+                                                              const std::vector<std::vector<bool>>& bonds){
     calculateAngle(i-1, i, i + 1, positions, bonds);
-    calcualtePotentialA();
+    calculatePotentialA();
 }

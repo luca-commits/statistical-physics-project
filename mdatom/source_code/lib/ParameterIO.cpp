@@ -12,7 +12,7 @@ MDParameters ParameterIO::readParameters(const std::string &fileName) {
         throw std::runtime_error("can't open " + fileName);
 
     MDParameters par;
-    int ntxi, ntxo, ntpw, ntt, ntwxm;
+    int ntxi, ntxo, ntpw, ntt, ntwxm, cmdt;
     std::string dummy;
 
     getline(fin, dummy);
@@ -44,7 +44,7 @@ MDParameters ParameterIO::readParameters(const std::string &fileName) {
     fin.ignore();
     getline(fin, dummy);
     fin >> par.randomSeed
-        >> par.chainMdType;
+        >> cmdt;
 
     fin.ignore();
     getline(fin, dummy);
@@ -81,6 +81,7 @@ MDParameters ParameterIO::readParameters(const std::string &fileName) {
     par.trajectoryOutput = ntwxm > 0;
     par.trajectoryOutputFormat = trajectoryFileFormatFromInt(ntpw);
     par.mdType = simulationTypeFromInt(ntt);
+    par.chainMdType = chainSimTypeFromInt(cmdt);
 
     return par;
 }

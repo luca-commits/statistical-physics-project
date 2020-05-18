@@ -77,4 +77,7 @@ int trajectoryFileFormatToInt(TrajectoryFileFormat ntpw);
 SimulationType simulationTypeFromInt(int ntt);
 int simulationTypeToInt(SimulationType ntt);
 
+ChainSimType chainSimTypeFromInt(int ntt);
+int chainSimTypeToInt(ChainSimType ntt);
+
 #endif // MDPARAMETERS_H
