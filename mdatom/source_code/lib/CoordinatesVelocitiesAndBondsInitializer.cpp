@@ -1,19 +1,22 @@
 #include "CoordinatesVelocitiesAndBondsInitializer.h"
+#include "BinaryIO.h"
+#include "RandomNumberGenerator.h"
+#include <cmath>
+#include <stdexcept>
+#include <utility>
+#include <string>
 
-CoordinatesVelocitiesAndBondsInitializer::CoordinatesAndVelocitiesInitializer(MDRunOutput& mdoutput,
-    const MDParameters& parameters, std::string coordinatesFileName, std::string bondsFileName)
-    : output(mdOutput), 
-      par(parameters), 
-      fileName(std::move(coordinatesFileName)),
-      fileName_bonds(std::move(bondsFileName)) {
+CoordinatesVelocitiesAndBondsInitializer::CoordinatesVelocitiesAndBondsInitializer(MDRunOutput& mdoutput, const MDParameters& parameters, std::string coordinatesFileName, std::string bondsFileName)
+    : CoordinatesAndVelocitiesInitializer(mdoutput, parameters, coordinatesFileName),
+      fileName_bonds(bondsFileName) {
 
 }
 
 void CoordinatesVelocitiesAndBondsInitializer::initialize(std::vector<double>& positions, 
-    std::vector<double>& velocities, std::vector<std::pair<int, int>> bonds) {
+    std::vector<double>& velocities, std::vector<std::vector<bool>>& bonds) {
     
     // Initialize positions and velocities as usual
-    this->initialize(positions, velocities);
+    CoordinatesAndVelocitiesInitializer::initialize(positions, velocities);
     
     // Check whether we are simulating a chain and using an automatically generated mesh
     if (par.chainMdType != ChainSimType::noChains &&
@@ -31,7 +34,13 @@ void CoordinatesVelocitiesAndBondsInitializer::initialize(std::vector<double>& p
         // Throw exception if there are too many bonds
         if (nbonds > nat * nat)
             throw std::runtime_error("NBONDS (" + fileName_bonds + ") = " + 
-                                     std::tostring(nbonds) + " > NATOM^2");
+                                     std::to_string(nbonds) + " > NATOM^2");
+        
+        for (int i = 0; i < nat; i++) {
+          for (int j = 0; j < nat; j++) {
+            bonds[i][j] = false;
+          }
+        }
         
         // Fill bonds vector from bonds file
         for (int counter = 0; counter < nbonds; counter++) {
@@ -39,7 +48,7 @@ void CoordinatesVelocitiesAndBondsInitializer::initialize(std::vector<double>& p
             fin_bonds >> i;
             fin_bonds >> j;
             
-            bonds.push_back(std::make_pair<unsigned int, unsigned int>(i, j));
+            bonds[i][j] = true;
         }
     } else if(par.chainMdType != ChainSimType::noChains &&
               par.xvInitialization == InitialXVGenerator::generateInitialX) {

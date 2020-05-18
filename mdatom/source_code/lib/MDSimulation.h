@@ -7,6 +7,7 @@
 #include "AveragedRadialDistribution.h"
 #include <string>
 #include <vector>
+#include <utility>
 #include <iostream>
 
 /*!
@@ -21,18 +22,18 @@ class MDSimulation {
     void performSimulation(const std::string& parFile, const std::string& coordFile = "");
     /*! Perform a simulation based parameters and an (optional) coordinate file. */
     void performSimulation(const MDParameters& par, const std::string& coordinateFile = "");
-
-  private:
+  
+  protected:
     void prepareRun();
     void checkParameterValidity();
     void initializeCoordinatesAndVelocities(const std::string& coordinateFile);
-    void executeMDIterations();
-    void printRadialDistribution(const AveragedRadialDistribution& radialDistribution);
-    void finalizeRun();
-
+    virtual void executeMDIterations();
+    virtual void printRadialDistribution(const AveragedRadialDistribution& radialDistribution);
+    virtual void finalizeRun();
+  
+    MDParameters parameters;
     MDRunOutput output;
     Timer timer;
-    MDParameters parameters;
     std::vector<double> positions, velocities;
     std::vector<std::pair<int,int>> bonds; //contains all pairs of bonded atoms in the chain
 };

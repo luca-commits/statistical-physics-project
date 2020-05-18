@@ -80,6 +80,6 @@ SimulationType simulationTypeFromInt(int ntt);
 int simulationTypeToInt(SimulationType ntt);
 
 ChainSimType chainSimTypeFromInt(int ntt);
-int ChainSimTypeToInt (ChainSimType ntt);
+int chainSimTypeToInt(ChainSimType ntt);
 
 #endif // MDPARAMETERS_H

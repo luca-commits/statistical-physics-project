@@ -13,8 +13,9 @@
  * Its run function contains a loop that propagates the atoms according to the options specified in the parameters.
  */
 class MDRun {
+  protected:
     static const int numberProperties = 6;
-
+  
   public:
     using PropertyArray = std::array<double, numberProperties>;
 
@@ -22,10 +23,10 @@ class MDRun {
     void run(std::vector<double> &x, std::vector<double> &v);
     const AveragedRadialDistribution& getRadialDistribution() const;
 
-  private:
+  protected:
     void initializeVariables();
     void initializeTemperature(const std::vector<double>& velocities);
-    void performStep(std::vector<double>& positions, std::vector<double>& velocities, int nstep, double time);
+    virtual void performStep(std::vector<double>& positions, std::vector<double>& velocities, int nstep, double time);
     void printOutputForStep(const std::vector<double>& positions, const std::vector<double>& velocities, int nstep, double time);
     void printAverages(double time);
 

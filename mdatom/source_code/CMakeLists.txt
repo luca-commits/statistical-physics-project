@@ -28,6 +28,10 @@ set (headers
      lib/PeriodicBoundaryConditions.h
      lib/CenterOfMassCalculator.h
      lib/RandomNumberGenerator.h
+     lib/ChainInteractionCalculator.h
+     lib/ChainMDSimulation.h
+     lib/ChainMDRun.h
+     lib/CoordinatesVelocitiesAndBondsInitializer.h
 )
 
 set (sources
@@ -47,6 +51,10 @@ set (sources
      lib/PeriodicBoundaryConditions.cpp
      lib/CenterOfMassCalculator.cpp
      lib/RandomNumberGenerator.cpp
+     lib/ChainInteractionCalculator.cpp
+     lib/ChainMDSimulation.cpp
+     lib/ChainMDRun.cpp
+     lib/CoordinatesVelocitiesAndBondsInitializer.cpp
 )
 
 add_library(mdatomLib ${sources} ${headers})

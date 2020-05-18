@@ -17,11 +17,11 @@ class CoordinatesVelocitiesAndBondsInitializer : public CoordinatesAndVelocities
     CoordinatesVelocitiesAndBondsInitializer(MDRunOutput& mdoutput, const MDParameters& parameters, 
       std::string coordinatesFileName, std::string bondsFileName);
     void initialize(std::vector<double>& positions, std::vector<double>& velocities, 
-                    std::vector<std::pair<int, int>> bonds);
+                    std::vector<std::vector<bool>>& bonds);
 
   private:
-    std::string fileName_bonds;
-    std::ifstream fin_bonds;
+    std::string fileName_bonds; // path to bonds file
+    std::ifstream fin_bonds; // stream to read from bonds file
 };
 
 #endif // COORDINATESVELOCITIESANDBONDSINITIALIZER_H

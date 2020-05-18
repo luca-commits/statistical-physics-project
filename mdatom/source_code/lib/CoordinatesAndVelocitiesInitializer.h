@@ -17,7 +17,7 @@ class CoordinatesAndVelocitiesInitializer {
     CoordinatesAndVelocitiesInitializer(MDRunOutput& mdOutput, const MDParameters& parameters, std::string coordinatesFileName);
     void initialize(std::vector<double>& positions, std::vector<double>&velocities);
 
-  private:
+  protected:
     void generateAtomicConfiguration(std::vector<double>& positions);
 
     MDRunOutput& output;
