@@ -22,20 +22,19 @@ class MDSimulation {
     void performSimulation(const std::string& parFile, const std::string& coordFile = "");
     /*! Perform a simulation based parameters and an (optional) coordinate file. */
     void performSimulation(const MDParameters& par, const std::string& coordinateFile = "");
-
-  private:
+  
+  protected:
     void prepareRun();
     void checkParameterValidity();
     void initializeCoordinatesAndVelocities(const std::string& coordinateFile);
-    void executeMDIterations();
-    void printRadialDistribution(const AveragedRadialDistribution& radialDistribution);
-    void finalizeRun();
-
+    virtual void executeMDIterations();
+    virtual void printRadialDistribution(const AveragedRadialDistribution& radialDistribution);
+    virtual void finalizeRun();
+  
+    MDParameters parameters;
     MDRunOutput output;
     Timer timer;
-    MDParameters parameters;
     std::vector<double> positions, velocities;
-    std::vector<std::vector<bool>> bonds;//bonds[i][j] = 1 if atom i is bonded to atom j
 };
 
 #endif // MDSIMULATION_H
