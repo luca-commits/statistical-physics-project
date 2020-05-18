@@ -28,7 +28,7 @@ enum class SimulationType {
 
 enum class ChainSimType {
     noChains,			//normal md simulation
-    noDihedrals,		//only bond and angle terms
+    noAngles,		    //only bond and angle terms
     complete			//bond, angle and torsion terms
 };
 /*!
@@ -63,6 +63,8 @@ struct MDParameters {
     bool trajectoryOutput;
     TrajectoryFileFormat trajectoryOutputFormat;
     int trajectoryOutputInterval;
+    double gamma;
+    double theta;
 };
 
 FinalCoordinateFileFormat finalCoordinateFileFormatFromInt(int ntxo);
