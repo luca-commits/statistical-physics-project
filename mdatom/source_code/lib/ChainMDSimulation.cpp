@@ -1,6 +1,6 @@
 #include "ChainMDSimulation.h"
 #include "TrajectoryFileWriter.h"
-#include "MDRun.h"
+#include "ChainMDRun.h"
 #include "CoordinatesAndVelocitiesInitializer.h"
 #include "ParameterIO.h"
 #include "ParameterValidityChecker.h"
@@ -36,4 +36,17 @@ void ChainMDSimulation::initializeCoordinatesVelocitiesAndBonds(const std::strin
   // Use initializer class to build coords, velocities and bonds
   CoordinatesVelocitiesAndBondsInitializer xvbInitializer(output, parameters, coordinateFile, bondsFile);
   xvbInitializer.initialize(positions, velocities, bonds);
+}
+
+void ChainMDSimulation::executeMDIterations() {
+    TrajectoryFileWriter trajectoryWriter(parameters, "coords.final", "coords.traj");
+    trajectoryWriter.writeBeforeRun();
+
+    timer.mdStart();
+    ChainMDRun mdRun(parameters, output, trajectoryWriter);
+    mdRun.run(positions, velocities);
+    timer.mdEnd();
+
+    printRadialDistribution(mdRun.getRadialDistribution());
+    trajectoryWriter.writeFinalCoordinates(positions, velocities);
 }

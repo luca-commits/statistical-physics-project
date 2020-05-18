@@ -22,6 +22,7 @@ class ChainMDSimulation : public MDSimulation {
     // build internal data structures of coords, velocities and bonds from files
     void initializeCoordinatesVelocitiesAndBonds(const std::string& coordinateFile, 
                                                  const std::string& bondsFile);
+    void executeMDIterations();
     
     std::vector<std::vector<bool>> bonds; //bonds[i][j] = 1 if atom i is bonded to atom j
 };
