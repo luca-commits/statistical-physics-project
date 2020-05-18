@@ -20,8 +20,8 @@ class CoordinatesVelocitiesAndBondsInitializer : public CoordinatesAndVelocities
                     std::vector<std::vector<bool>>& bonds);
 
   private:
-    std::string fileName_bonds;
-    std::ifstream fin_bonds;
+    std::string fileName_bonds; // path to bonds file
+    std::ifstream fin_bonds; // stream to read from bonds file
 };
 
 #endif // COORDINATESVELOCITIESANDBONDSINITIALIZER_H

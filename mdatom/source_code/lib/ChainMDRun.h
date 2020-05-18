@@ -4,6 +4,7 @@
 #include "MDRun.h"
 #include "ChainInteractionCalculator.h"
 
+// Inherited class from MDRun which accomodates for bonds between atoms
 class ChainMDRun : public MDRun {
   public:
     ChainMDRun(const MDParameters& parameters, MDRunOutput& out, TrajectoryFileWriter& trajectoryFileWriter);

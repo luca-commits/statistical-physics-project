@@ -18,6 +18,7 @@ void ChainMDSimulation::performSimulation(const std::string& parameterFile,
   performSimulation(par, coordinateFile, bondsFile);
 }
 
+// copied from MDSimulation, only changed init class to accomodate for bonds
 void ChainMDSimulation::performSimulation(const MDParameters& par, 
   const std::string& coordinateFile, const std::string& bondsFile) {
   
@@ -32,6 +33,7 @@ void ChainMDSimulation::performSimulation(const MDParameters& par,
 void ChainMDSimulation::initializeCoordinatesVelocitiesAndBonds(const std::string& coordinateFile,
   const std::string& bondsFile) {
   
+  // Use initializer class to build coords, velocities and bonds
   CoordinatesVelocitiesAndBondsInitializer xvbInitializer(output, parameters, coordinateFile, bondsFile);
   xvbInitializer.initialize(positions, velocities, bonds);
 }

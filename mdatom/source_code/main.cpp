@@ -27,6 +27,7 @@ int main(int argc, char* argv[]) {
     if (argc > 3)
         bondsFile = argv[3];
     
+    // Check whether we are running a normal simulation or a chain simulation
     if (argc <= 3) {
       MDSimulation md(std::cout);
       try {

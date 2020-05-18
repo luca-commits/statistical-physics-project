@@ -11,7 +11,7 @@ ChainMDRun::ChainMDRun(const MDParameters& parameters,
 
 };
 
-// Modified original function to use new ChainInteractionCalculator
+// Modified original function from MDRun to use new ChainInteractionCalculator for chains
 void ChainMDRun::performStep(std::vector<double> &positions, std::vector<double> &velocities, int nstep, double time) {
   /* put atoms in central periodic box */
   PeriodicBoundaryConditions::recenterAtoms(par.numberAtoms, positions, par.boxSize);
@@ -21,8 +21,8 @@ void ChainMDRun::performStep(std::vector<double> &positions, std::vector<double>
    */
   chainForceCalculator.calculate(positions, forces);
   radialDistribution.addInstantaneousDistribution(forceCalculator.getInstantaneousRadialDistribution());
-  double vir = forceCalculator.getVirial();
-  properties[2] = forceCalculator.getPotentialEnergy();
+  double vir = chainForceCalculator.getVirial();
+  properties[2] = chainForceCalculator.getPotentialEnergy();
   properties[3] = vir;
 
   /* determine velocity scaling factor, when coupling to a bath */
