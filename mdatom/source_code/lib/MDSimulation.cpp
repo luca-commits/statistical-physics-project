@@ -2,6 +2,7 @@
 #include "TrajectoryFileWriter.h"
 #include "MDRun.h"
 #include "CoordinatesAndVelocitiesInitializer.h"
+#include "CoordinatesVelocitiesAndBondsInitializer.h"
 #include "ParameterIO.h"
 #include "ParameterValidityChecker.h"
 #include "RandomNumberGenerator.h"

@@ -10,7 +10,7 @@ CoordinatesVelocitiesAndBondsInitializer::CoordinatesAndVelocitiesInitializer(MD
 }
 
 void CoordinatesVelocitiesAndBondsInitializer::initialize(std::vector<double>& positions, 
-    std::vector<double>& velocities, std::vector<std::pair<int, int>> bonds) {
+    std::vector<double>& velocities, std::vector<std::vector<bonds>>& bonds) {
     
     // Initialize positions and velocities as usual
     this->initialize(positions, velocities);
@@ -33,13 +33,19 @@ void CoordinatesVelocitiesAndBondsInitializer::initialize(std::vector<double>& p
             throw std::runtime_error("NBONDS (" + fileName_bonds + ") = " + 
                                      std::tostring(nbonds) + " > NATOM^2");
         
+        for (int i = 0; i < nat; i++) {
+          for (int j = 0; j < nat; j++) {
+            bonds[i][j] = false;
+          }
+        }
+        
         // Fill bonds vector from bonds file
         for (int counter = 0; counter < nbonds; counter++) {
             unsigned int i, j;
             fin_bonds >> i;
             fin_bonds >> j;
             
-            bonds.push_back(std::make_pair<unsigned int, unsigned int>(i, j));
+            bonds[i][j] = true;
         }
     } else if(par.chainMdType != ChainSimType::noChains &&
               par.xvInitialization == InitialXVGenerator::generateInitialX) {
