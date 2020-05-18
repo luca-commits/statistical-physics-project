@@ -43,7 +43,8 @@ MDParameters ParameterIO::readParameters(const std::string &fileName) {
 
     fin.ignore();
     getline(fin, dummy);
-    fin >> par.randomSeed;
+    fin >> par.randomSeed
+        >> par.chainMdType;
 
     fin.ignore();
     getline(fin, dummy);
