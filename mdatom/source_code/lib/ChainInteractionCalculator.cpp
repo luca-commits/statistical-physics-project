@@ -138,10 +138,8 @@ void ChainInteractionCalculator::calculatePotentialAndForceMagnitude() {
         // E_angle: is done in calculateA
         
         // E_dihedral:
-        if (type != ChainSimType::noDihedrals) {
-            for (int i = i; i <= n; i++) {
-                eij += 0.5 * Vn * (1 + std::cos(i * omega - gamma));
-            }
+        for (int i = i; i <= n; i++) {
+            eij += 0.5 * Vn * (1 + std::cos(i * omega - gamma));
         }
         
     }
