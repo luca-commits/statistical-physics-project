@@ -78,9 +78,9 @@ MDParameters ParameterIO::readParameters(const std::string &fileName) {
 
     fin.ignore();
     getline(fin, dummy);
-    fin >> cmdti
-        >> theta
-        >> gamma;
+    fin >> cmdt
+        >> par.theta
+        >> par.gamma;
     
     par.xvInitialization = initialXVGeneratorFromInt(ntxi);
     par.finalXVOutput = finalCoordinateFileFormatFromInt(ntxo);
