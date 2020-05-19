@@ -112,3 +112,37 @@ void ChainInteractionCalculator::calculateInteractionA(int i, const std::vector<
     calculateAngle(i-1, i, i + 1, positions, bonds);
     calculatePotentialA();
 }
+
+void ChainInteractionCalculator::calculatePotentialAndForceMagnitude() {
+  // E_pot,tot = E_vdW + E_coul + E_cov
+  
+  // E_vdW: Lennard-Jones Potential
+  double riji2 = 1.0 / rij2; // inverse inter-particle distance squared
+  double riji6 = riji2 * riji2 * riji2; // inverse inter-particle distance (6th power)
+  double crh = c12 * riji6;
+  double crhh = crh - c6; //  L-J potential work variable
+  eij= crhh * riji6;
+  dij= 6. * (crh + crhh) * riji6 * riji2;
+  
+  // Contribution by Coulomb is 0 because we are looking at interaction
+  // between atoms (electrically neutral)
+  
+  // E_cov = E_bond + E_angle + E_dihedral
+  // E_bond:
+  if (bond_ij) {
+    eij += kb * std::pow(std::sqrt(rij) - std::sqrt(rij_0), 2);
+  }
+  
+  // E_angle: is done in calculateA
+  
+  // E_dihedral:
+  for (int i = i; i <= n; i++) {
+    eij += 0.5 * Vn * (1 + std::cos(n * omega - gamma));
+  }
+  
+  
+}
+
+
+
+

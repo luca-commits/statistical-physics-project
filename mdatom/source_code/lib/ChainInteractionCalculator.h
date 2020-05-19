@@ -50,6 +50,11 @@ class ChainInteractionCalculator : public InteractionCalculator{
 
       double dihedral_ijkl;
       double angle_ijk;
+      
+      bool bond_ij;
+      
+      double kb, ka; // constants for bond contribution to potential
+      unsigned int n;
 
       ChainSimType type;
 };  
