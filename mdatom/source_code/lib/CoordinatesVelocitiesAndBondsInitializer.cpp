@@ -49,6 +49,7 @@ void CoordinatesVelocitiesAndBondsInitializer::initialize(std::vector<double>& p
             fin_bonds >> j;
             
             bonds[i][j] = true;
+            bonds[j][i] = true;
         }
     } else if(par.chainMdType != ChainSimType::noChains &&
               par.xvInitialization == InitialXVGenerator::generateInitialX) {
