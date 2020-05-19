@@ -115,5 +115,5 @@ void ChainInteractionCalculator::calculateInteractionA(int i, const std::vector<
 }
 
 void ChainInteractionCalculator::calculatePotentialA(){
-    ei = ka * std::pow((angle_ikj - theta0), 2);
+    ei = ka * std::pow((angle_ijk - theta0), 2);
 }

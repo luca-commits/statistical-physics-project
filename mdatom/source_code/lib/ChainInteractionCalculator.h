@@ -47,6 +47,7 @@ class ChainInteractionCalculator : public InteractionCalculator{
 
       double theta0;
       double gamma;
+      double ka;
 
       double dihedral_ijkl;
       double angle_ijk;
