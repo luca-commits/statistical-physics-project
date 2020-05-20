@@ -12,14 +12,14 @@ ChainMDRun::ChainMDRun(const MDParameters& parameters,
 };
 
 // Modified original function from MDRun to use new ChainInteractionCalculator for chains
-void ChainMDRun::performStep(std::vector<double> &positions, std::vector<double> &velocities, int nstep, double time) {
+void ChainMDRun::performStep(std::vector<double> &positions, std::vector<double> &velocities, std::vector<double> bonds, int nstep, double time) {
   /* put atoms in central periodic box */
   PeriodicBoundaryConditions::recenterAtoms(par.numberAtoms, positions, par.boxSize);
 
   /* calculate forces, potential energy, virial
    * and contribution to the radial distribution function
    */
-  chainForceCalculator.calculate(positions, forces);
+  chainForceCalculator.calculate(positions, bonds, forces);
   radialDistribution.addInstantaneousDistribution(forceCalculator.getInstantaneousRadialDistribution());
   double vir = chainForceCalculator.getVirial();
   properties[2] = chainForceCalculator.getPotentialEnergy();

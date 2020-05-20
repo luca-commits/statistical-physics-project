@@ -98,6 +98,17 @@ void ChainInteractionCalculator::calculateDihedral (int i, int j, int k, int l, 
   dihedral_ijkl = std::atan2(y, x);
 }
 
+void ChainInteractionCalculator::calculate(const std::vector<double>& positions, const std::vector<double>& bonds, std::vector<double>& forces) {
+    resetVariablesToZero(forces);
+
+    for (int i = 0; i < par.numberAtoms - 1; i++) {
+        for (int j = i + 1; j < par.numberAtoms; j++) {
+            calculateInteraction(i, j, positions, bonds, forces);
+        }
+    }
+    virial /= 2.;
+}
+
 void ChainInteractionCalculator::calculateA (const std::vector<double>& positions, 
                                              const std::vector<std::vector<bool>> bonds){
     resetPotentialToZero();
@@ -112,3 +123,58 @@ void ChainInteractionCalculator::calculateInteractionA(int i, const std::vector<
     calculateAngle(i-1, i, i + 1, positions, bonds);
     calculatePotentialA();
 }
+
+void ChainInteractionCalculator::calculateInteraction(int i, int j, const std::vector<double>& positions,
+      std::vector<double>& bonds, std::vector<double>& forces) {
+    applyPeriodicBoundaryConditions(i, j, positions);
+    calculateSquaredDistance();
+    
+    bond_ij = bonds[i][j];
+    
+    if (bond_ij)
+      calculateDihedral(i-1, i, j, j+1, positions);
+    
+    if (rij2 < rcutf2) {
+        calculatePotentialAndForceMagnitude();
+        potentialEnergy += eij;
+        calculateForceAndVirialContributions(i, j, forces);
+    }
+    
+    radialDistribution.addPairAtSquaredDistance(rij2);
+}
+
+void ChainInteractionCalculator::calculatePotentialAndForceMagnitude() {
+    // E_pot,tot = E_vdW + E_coul + E_cov
+    
+    // E_vdW: Lennard-Jones Potential
+    double riji2 = 1.0 / rij2; // inverse inter-particle distance squared
+    double riji6 = riji2 * riji2 * riji2; // inverse inter-particle distance (6th power)
+    double crh = c12 * riji6;
+    double crhh = crh - c6; //  L-J potential work variable
+    eij= crhh * riji6;
+    dij= 6. * (crh + crhh) * riji6 * riji2;
+    
+    
+    if (type != ChainSimType::noChains) {
+        // Contribution by Coulomb is 0 because we are looking at interaction
+        // between atoms (electrically neutral)
+        
+        // E_cov = E_bond + E_angle + E_dihedral
+        // E_bond:
+        if (bond_ij) {
+          eij += kb * std::pow(std::sqrt(rij) - std::sqrt(rij_0), 2);
+        }
+        
+        // E_angle: is done in calculateA
+        
+        // E_dihedral:
+        for (int i = 0; i <= n; i++) {
+            eij += 0.5 * Vn * (1 + std::cos(i * omega - gamma));
+        }
+        
+    }
+}
+
+
+
+

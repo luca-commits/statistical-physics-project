@@ -9,7 +9,7 @@ class ChainMDRun : public MDRun {
   public:
     ChainMDRun(const MDParameters& parameters, MDRunOutput& out, TrajectoryFileWriter& trajectoryFileWriter);
   private:
-    virtual void performStep(std::vector<double>& positions, std::vector<double>& velocities, int nstep, double time);
+    virtual void performStep(std::vector<double>& positions, std::vector<double>& velocities, std::Vector<std::vector<bool>> bonds, int nstep, double time);
     
     ChainInteractionCalculator chainForceCalculator;
 };

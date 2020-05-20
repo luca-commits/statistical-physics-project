@@ -44,7 +44,7 @@ void ChainMDSimulation::executeMDIterations() {
 
     timer.mdStart();
     ChainMDRun mdRun(parameters, output, trajectoryWriter);
-    mdRun.run(positions, velocities);
+    mdRun.run(positions, velocities, bonds);
     timer.mdEnd();
 
     printRadialDistribution(mdRun.getRadialDistribution());
