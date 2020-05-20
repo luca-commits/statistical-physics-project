@@ -122,6 +122,15 @@ void ChainInteractionCalculator::calculateInteractionA(int i, const std::vector<
                                                               const std::vector<std::vector<bool>>& bonds){
     calculateAngle(i-1, i, i + 1, positions, bonds);
     calculatePotentialA();
+    potentialEnergy += ei;
+}
+
+void ChainInteractionCalculator::calculatePotentialA(){
+    ei = ka * std::pow((angle_ijk - theta0), 2);
+}
+
+void ChainInteractionCalculator::resetPotentialToZero(){
+    potentialEnergy = 0;
 }
 
 void ChainInteractionCalculator::calculateInteraction(int i, int j, const std::vector<double>& positions,

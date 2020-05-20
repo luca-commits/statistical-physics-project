@@ -50,6 +50,7 @@ class ChainInteractionCalculator : public InteractionCalculator{
 
       double theta0;
       double gamma;
+      double ka;
 
       double dihedral_ijkl;
       double angle_ijk;
@@ -58,6 +59,8 @@ class ChainInteractionCalculator : public InteractionCalculator{
       
       double kb, ka; // constants for bond contribution to potential
       unsigned int n;
+
+      double ei; //potential due to atom i
 
       ChainSimType type;
 };  
