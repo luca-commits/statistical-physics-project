@@ -14,6 +14,9 @@ class ChainInteractionCalculator : public InteractionCalculator{
     public:
       explicit ChainInteractionCalculator(const MDParameters& parameters);  //constructor
       
+      // called from the outside, calculates all interactions
+      void ChainInteractionCalculator::calculate(const std::vector<double>& positions, const std::vector<std::vector<bool>>& bonds, std::vector<double>& forces)
+      
       //loops over all atoms and adds angle contributions to E_pot by calling calculateInteractionA
       //the name doesn't make too much sense on its own, it's just to show that it is a parallel to 
       //InteractionCalculator.h 

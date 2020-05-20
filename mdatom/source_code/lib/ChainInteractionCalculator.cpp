@@ -98,6 +98,17 @@ void ChainInteractionCalculator::calculateDihedral (int i, int j, int k, int l, 
   dihedral_ijkl = std::atan2(y, x);
 }
 
+void ChainInteractionCalculator::calculate(const std::vector<double>& positions, const std::vector<double>& bonds, std::vector<double>& forces) {
+    resetVariablesToZero(forces);
+
+    for (int i = 0; i < par.numberAtoms - 1; i++) {
+        for (int j = i + 1; j < par.numberAtoms; j++) {
+            calculateInteraction(i, j, positions, bonds, forces);
+        }
+    }
+    virial /= 2.;
+}
+
 void ChainInteractionCalculator::calculateA (const std::vector<double>& positions, 
                                              const std::vector<std::vector<bool>> bonds){
     resetPotentialToZero();
@@ -111,6 +122,25 @@ void ChainInteractionCalculator::calculateInteractionA(int i, const std::vector<
                                                               const std::vector<std::vector<bool>>& bonds){
     calculateAngle(i-1, i, i + 1, positions, bonds);
     calculatePotentialA();
+}
+
+void ChainInteractionCalculator::calculateInteraction(int i, int j, const std::vector<double>& positions,
+      std::vector<double>& bonds, std::vector<double>& forces) {
+    applyPeriodicBoundaryConditions(i, j, positions);
+    calculateSquaredDistance();
+    
+    bond_ij = bonds[i][j];
+    
+    if (bond_ij)
+      calculateDihedral(i-1, i, j, j+1, positions);
+    
+    if (rij2 < rcutf2) {
+        calculatePotentialAndForceMagnitude();
+        potentialEnergy += eij;
+        calculateForceAndVirialContributions(i, j, forces);
+    }
+    
+    radialDistribution.addPairAtSquaredDistance(rij2);
 }
 
 void ChainInteractionCalculator::calculatePotentialAndForceMagnitude() {
@@ -138,7 +168,7 @@ void ChainInteractionCalculator::calculatePotentialAndForceMagnitude() {
         // E_angle: is done in calculateA
         
         // E_dihedral:
-        for (int i = i; i <= n; i++) {
+        for (int i = 0; i <= n; i++) {
             eij += 0.5 * Vn * (1 + std::cos(i * omega - gamma));
         }
         
