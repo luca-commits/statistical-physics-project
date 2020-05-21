@@ -3,7 +3,8 @@ n = int(input())
 arr = [0, 0, 0]
 
 file = open("coords.inp", "w")
-
+file.write("TITLE")
+file.write(n)
 for x in range(n):
      for i in range(3):
          file.write(str(arr[i]))
