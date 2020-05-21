@@ -100,6 +100,10 @@ void ChainInteractionCalculator::calculateDihedral (int i, int j, int k, int l, 
 
 void ChainInteractionCalculator::calculate(const std::vector<double>& positions, const std::vector<double>& bonds, std::vector<double>& forces) {
     resetVariablesToZero(forces);
+    
+    if(par.chainMdType == complete){
+        calculateA();
+    }        
 
     for (int i = 0; i < par.numberAtoms - 1; i++) {
         for (int j = i + 1; j < par.numberAtoms; j++) {
@@ -111,7 +115,6 @@ void ChainInteractionCalculator::calculate(const std::vector<double>& positions,
 
 void ChainInteractionCalculator::calculateA (const std::vector<double>& positions, 
                                              const std::vector<std::vector<bool>> bonds){
-    resetPotentialToZero();
 
     for(int i = 1; i < par.numberAtoms - 1; ++i){
         calculateInteractionA(i, positions, bonds);
@@ -129,9 +132,6 @@ void ChainInteractionCalculator::calculatePotentialA(){
     ei = ka * std::pow((angle_ijk - theta0), 2);
 }
 
-void ChainInteractionCalculator::resetPotentialToZero(){
-    potentialEnergy = 0;
-}
 
 void ChainInteractionCalculator::calculateInteraction(int i, int j, const std::vector<double>& positions,
       std::vector<double>& bonds, std::vector<double>& forces) {
