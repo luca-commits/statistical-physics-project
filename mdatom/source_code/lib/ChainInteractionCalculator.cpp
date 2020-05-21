@@ -132,7 +132,7 @@ void ChainInteractionCalculator::calculateInteractionA(int i, const std::vector<
                                                               const std::vector<std::vector<bool>>& bonds){
     calculateAngle(i-1, i, i + 1, positions, bonds);
     calculatePotentialA();
-    std::cout << "angle contribution to energy: " << ei << std::endl;
+ //   std::cout << "angle contribution to energy: " << ei << std::endl;
     potentialEnergy += ei;
 }
 
@@ -143,6 +143,7 @@ void ChainInteractionCalculator::calculatePotentialA(){
 
 void ChainInteractionCalculator::calculateInteraction(int i, int j, const std::vector<double>& positions,
       const std::vector<std::vector<bool>>& bonds, std::vector<double>& forces) {
+        
     applyPeriodicBoundaryConditions(i, j, positions);
     calculateSquaredDistance();
     
@@ -152,7 +153,7 @@ void ChainInteractionCalculator::calculateInteraction(int i, int j, const std::v
     if (bond_ij) {
         double val = kb * std::pow(std::sqrt(rij2) - r0, 2);
         potentialEnergy += val;
-        std::cout << "bond contribution to energy:" << val << std::endl;
+   //     std::cout << "bond contribution to energy:" << val << std::endl;
     }
     
     calculateDihedral(i-1, i, j, j+1, positions, bonds);
@@ -177,7 +178,7 @@ void ChainInteractionCalculator::calculatePotentialAndForceMagnitude() {
     eij= crhh * riji6;
     dij= 6. * (crh + crhh) * riji6 * riji2;
     
-    std::cout << "LJ-contribution to energy: " << eij << std::endl;
+ //   std::cout << "LJ-contribution to energy: " << eij << std::endl;
     
     if (type != ChainSimType::noChains) {
         // Contribution by Coulomb is 0 because we are looking at interaction
@@ -192,7 +193,7 @@ void ChainInteractionCalculator::calculatePotentialAndForceMagnitude() {
           double val2 = Vn * 3. * (1. + std::cos(3 * dihedral_ijkl - gamma));
         
           eij += val2;
-          std::cout << "dihedral contribution to energy: " << val2 << std::endl;
+       //   std::cout << "dihedral contribution to energy: " << val2 << std::endl;
         }
         
     }
@@ -207,6 +208,13 @@ void ChainInteractionCalculator::initializeValues() {
     kb = 1294.04e2; // kJ / (mol * nm^2)
     theta0 = 1.911; // rad
     r0 = 0.1526; // nm
+    sig6 = par.sigmaLJ * par.sigmaLJ;
+    sig6 = sig6 * sig6 * sig6;
+    c6 = 4. * par.epsilonLJ * sig6;
+    c12 = c6 * sig6;
+    rcutf2 = par.interactionCutoffRadius * par.interactionCutoffRadius;
+    for (int m = 0; m < 3; m++)
+        inverseBoxLength[m] = 1.0 / par.boxSize[m];
 }
 
 

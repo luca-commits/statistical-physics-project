@@ -39,9 +39,6 @@ class ChainInteractionCalculator : public InteractionCalculator{
       //calculates the potential contribution from Coulomb interaction, bond terms and dihedral terms
       void calculatePotentialAndForceMagnitude () override;
 
-      //This function is called by InteractionCalculatorA. Sice calculateInteractionA only adds to
-      // the potential, only the latter has to be reset to zero
-      void resetPotentialToZero();
       void initializeValues () override;
 
       double Vn;
