@@ -8,7 +8,7 @@
 
 ChainMDSimulation::ChainMDSimulation(std::ostream& outputStream)
   : MDSimulation(outputStream) {
-  
+
 }
 
 void ChainMDSimulation::performSimulation(const std::string& parameterFile, 

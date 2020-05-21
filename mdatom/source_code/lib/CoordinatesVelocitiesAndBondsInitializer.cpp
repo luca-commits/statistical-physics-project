@@ -30,13 +30,16 @@ void CoordinatesVelocitiesAndBondsInitializer::initialize(std::vector<double>& p
         // Read in number of bonds
         unsigned int nbonds;
         fin_bonds >> nbonds;
-        
+        std::cout << "no of bonds: " << nbonds << std::endl << std::flush;
         // Throw exception if there are too many bonds
         if (nbonds > nat * nat)
             throw std::runtime_error("NBONDS (" + fileName_bonds + ") = " + 
                                      std::to_string(nbonds) + " > NATOM^2");
         
+        bonds.resize(nat);
+        
         for (int i = 0; i < nat; i++) {
+          bonds[i].resize(nat);
           for (int j = 0; j < nat; j++) {
             bonds[i][j] = false;
           }

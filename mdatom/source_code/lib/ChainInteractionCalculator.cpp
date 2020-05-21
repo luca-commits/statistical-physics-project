@@ -2,11 +2,12 @@
 #include <algorithm>
 #include <exception>
 #include <cmath>
+#include <iostream>
 
 double dist(int i, int j, const std::vector<double>& pos) {
-  return std::sqrt((pos[3*i]-pos[3*j  ]) * (pos[3*i]-pos[3*j  ]) +
-                   (pos[3*i]-pos[3*j+1]) * (pos[3*i]-pos[3*j+1]) + 
-                   (pos[3*i]-pos[3*j+2]) * (pos[3*i]-pos[3*j+2]));
+  return std::sqrt((pos[3*i  ]-pos[3*j  ]) * (pos[3*i  ]-pos[3*j  ]) +
+                   (pos[3*i+1]-pos[3*j+1]) * (pos[3*i+1]-pos[3*j+1]) + 
+                   (pos[3*i+2]-pos[3*j+2]) * (pos[3*i+2]-pos[3*j+2]));
 }
 
 double dot(int i, int j, const std::vector<double>& pos) {
@@ -105,6 +106,7 @@ void ChainInteractionCalculator::calculateDihedral (int i, int j, int k, int l, 
 
 void ChainInteractionCalculator::calculate(const std::vector<double>& positions, const std::vector<std::vector<bool>>& bonds, std::vector<double>& forces) {
     resetVariablesToZero(forces);
+    initializeValues();
     
     if(par.chainMdType == ChainSimType::complete){
         calculateA(positions, bonds);
@@ -130,6 +132,7 @@ void ChainInteractionCalculator::calculateInteractionA(int i, const std::vector<
                                                               const std::vector<std::vector<bool>>& bonds){
     calculateAngle(i-1, i, i + 1, positions, bonds);
     calculatePotentialA();
+    std::cout << "angle contribution to energy: " << ei << std::endl;
     potentialEnergy += ei;
 }
 
@@ -145,8 +148,14 @@ void ChainInteractionCalculator::calculateInteraction(int i, int j, const std::v
     
     bond_ij = bonds[i][j];
     
-    if (bond_ij && i > 0 && j < par.numberAtoms-1)
-      calculateDihedral(i-1, i, j, j+1, positions, bonds);
+    // bond contribution to potential energy
+    if (bond_ij) {
+        double val = kb * std::pow(std::sqrt(rij2) - r0, 2);
+        potentialEnergy += val;
+        std::cout << "bond contribution to energy:" << val << std::endl;
+    }
+    
+    calculateDihedral(i-1, i, j, j+1, positions, bonds);
     
     if (rij2 < rcutf2) {
         calculatePotentialAndForceMagnitude();
@@ -168,21 +177,23 @@ void ChainInteractionCalculator::calculatePotentialAndForceMagnitude() {
     eij= crhh * riji6;
     dij= 6. * (crh + crhh) * riji6 * riji2;
     
+    std::cout << "LJ-contribution to energy: " << eij << std::endl;
     
     if (type != ChainSimType::noChains) {
         // Contribution by Coulomb is 0 because we are looking at interaction
         // between atoms (electrically neutral)
         
         // E_cov = E_bond + E_angle + E_dihedral
-        // E_bond:
-        if (bond_ij) {
-          eij += kb * std::pow(std::sqrt(rij2) - std::sqrt(r0), 2);
-        }
         
         // E_angle: is done in calculateA
         
         // E_dihedral:
-        eij += Vn * 3 * (1 + std::cos(3 * dihedral_ijkl - gamma));
+        if (bond_ij) {
+          double val2 = Vn * 3. * (1. + std::cos(3 * dihedral_ijkl - gamma));
+        
+          eij += val2;
+          std::cout << "dihedral contribution to energy: " << val2 << std::endl;
+        }
         
     }
 }

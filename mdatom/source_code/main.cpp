@@ -9,6 +9,8 @@
  */
 
 int main(int argc, char* argv[]) {
+  std::cout << "hi" << std::endl;
+
     switch (argc) {
         case 2: break;
         case 3: break;

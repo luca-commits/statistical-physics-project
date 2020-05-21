@@ -26,6 +26,8 @@ class ChainInteractionCalculator : public InteractionCalculator{
       //loops over all atoms and adds angle contributions to E_pot by calling calculateInteractionA
       //only need to loop over one variable since every atom has one angle (correct me if I'm wrong)
       void calculateA (const std::vector<double>& positions, const std::vector<std::vector<bool>> bonds);
+      //loops over all bonds and adds bond contributions to E_pot
+      void calculateB (const std::vector<double>& positions, const std::vector<std::vector<bool>> bonds);
       //sets the angle by calling calculateAngle, then calls calculatePotentialA
       void calculateInteractionA (int i, const std::vector<double>& positions,
                                   const std::vector<std::vector<bool>>&  bonds);
