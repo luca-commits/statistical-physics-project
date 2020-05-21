@@ -100,6 +100,10 @@ void ChainInteractionCalculator::calculateDihedral (int i, int j, int k, int l, 
 
 void ChainInteractionCalculator::calculate(const std::vector<double>& positions, const std::vector<double>& bonds, std::vector<double>& forces) {
     resetVariablesToZero(forces);
+    
+    if(par.chainMdType == complete){
+        calculateA();
+    }        
 
     for (int i = 0; i < par.numberAtoms - 1; i++) {
         for (int j = i + 1; j < par.numberAtoms; j++) {
