@@ -125,7 +125,7 @@ ChainSimType chainSimTypeFromInt(int ntt){
     if (ntt == 0)
         return ChainSimType::noChains;
     else if (ntt == 1)
-        return ChainSimType::noDihedrals;
+        return ChainSimType::noAngles;
     else if (ntt == 2)
         return ChainSimType::complete;
     else
@@ -136,7 +136,7 @@ int chainSimTypeToInt(ChainSimType ntt) {
     switch (ntt) {
         case ChainSimType::noChains:
             return 0;
-        case ChainSimType::noDihedrals:
+        case ChainSimType::noAngles:
             return 1;
         case ChainSimType::complete:
             return 2;

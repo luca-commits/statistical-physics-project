@@ -15,12 +15,7 @@ class ChainInteractionCalculator : public InteractionCalculator{
       explicit ChainInteractionCalculator(const MDParameters& parameters);  //constructor
       
       // called from the outside, calculates all interactions
-      void ChainInteractionCalculator::calculate(const std::vector<double>& positions, const std::vector<std::vector<bool>>& bonds, std::vector<double>& forces)
-      
-      //loops over all atoms and adds angle contributions to E_pot by calling calculateInteractionA
-      //the name doesn't make too much sense on its own, it's just to show that it is a parallel to 
-      //InteractionCalculator.h 
-      void calculateA (const std::vector<double>& positions, const std::vector<std::vector<bool>>& bonds);
+      void calculate(const std::vector<double>& positions, const std::vector<std::vector<bool>>& bonds, std::vector<double>& forces);
     private:
 
       void calculateAngle(int i, int j, int k, const std::vector<double>& positions,
@@ -38,7 +33,7 @@ class ChainInteractionCalculator : public InteractionCalculator{
       void calculatePotentialA();
       //set the dihedral angle + does everything that calculateInteraction does (in the base class)
       void calculateInteraction (int i, int j, const std::vector<double>& positions,
-                                 const std::vector<std::vector<bool>>& bonds, const std::vector<double> forces);
+                                 const std::vector<std::vector<bool>>& bonds, std::vector<double>& forces);
       //calculates the potential contribution from Coulomb interaction, bond terms and dihedral terms
       void calculatePotentialAndForceMagnitude () override;
 
@@ -47,6 +42,7 @@ class ChainInteractionCalculator : public InteractionCalculator{
       void resetPotentialToZero();
       void initializeValues () override;
 
+      double Vn;
       double r0;
       double theta0;
       double gamma;

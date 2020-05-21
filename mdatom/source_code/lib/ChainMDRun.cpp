@@ -12,7 +12,7 @@ ChainMDRun::ChainMDRun(const MDParameters& parameters,
 };
 
 // Modified original function from MDRun to use new ChainInteractionCalculator for chains
-void ChainMDRun::performStep(std::vector<double> &positions, std::vector<double> &velocities, std::vector<double> bonds, int nstep, double time) {
+void ChainMDRun::performStep(std::vector<double> &positions, std::vector<double> &velocities, std::vector<std::vector<bool>> &bonds, int nstep, double time) {
   /* put atoms in central periodic box */
   PeriodicBoundaryConditions::recenterAtoms(par.numberAtoms, positions, par.boxSize);
 
@@ -64,4 +64,25 @@ void ChainMDRun::performStep(std::vector<double> &positions, std::vector<double>
   }
 
   printOutputForStep(positions, velocities, nstep, time);
+}
+
+void ChainMDRun::run(std::vector<double> &x, std::vector<double> &v, std::vector<std::vector<bool>> &bonds) {
+    forces.resize(x.size());
+    synchronizedPositions.resize(x.size());
+    radialDistribution.setZero();
+
+    initializeVariables();
+    initializeTemperature(v);
+
+    output.printInitialTemperature(properties[1] / fac);
+    output.printIterationStart();
+
+    /* dynamics step */
+    double time = par.initialTime;
+    for (int nstep = 0; nstep < par.numberMDSteps; nstep++) {
+        time += par.timeStep;
+        performStep(x, v, bonds, nstep, time);
+    }
+
+    printAverages(time);
 }

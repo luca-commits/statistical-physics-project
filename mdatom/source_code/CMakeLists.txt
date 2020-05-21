@@ -39,22 +39,22 @@ set (sources
      lib/ParameterIO.cpp
      lib/ParameterValidityChecker.cpp
      lib/CoordinatesAndVelocitiesInitializer.cpp
+     lib/CoordinatesVelocitiesAndBondsInitializer.cpp
      lib/Timer.cpp
      lib/TrajectoryFileWriter.cpp
      lib/MDSimulation.cpp
+     lib/ChainMDSimulation.cpp
      lib/MDRun.cpp
+     lib/ChainMDRun.cpp
      lib/MDRunOutput.cpp
      lib/InteractionCalculator.cpp
+     lib/ChainInteractionCalculator.cpp
      lib/InstantaneousRadialDistribution.cpp
      lib/AveragedRadialDistribution.cpp
      lib/BinaryIO.cpp
      lib/PeriodicBoundaryConditions.cpp
      lib/CenterOfMassCalculator.cpp
      lib/RandomNumberGenerator.cpp
-     lib/ChainInteractionCalculator.cpp
-     lib/ChainMDSimulation.cpp
-     lib/ChainMDRun.cpp
-     lib/CoordinatesVelocitiesAndBondsInitializer.cpp
 )
 
 add_library(mdatomLib ${sources} ${headers})

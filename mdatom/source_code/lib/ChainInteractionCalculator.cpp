@@ -63,6 +63,11 @@ void ChainInteractionCalculator::calculateAngle(int i, int j, int k, const std::
   angle_ijk = std::acos(r_ij * r_ij + r_jk * r_jk - r_ik * r_ik) / (2 * r_ij * r_jk);
 }
 
+ChainInteractionCalculator::ChainInteractionCalculator(const MDParameters& parameters) 
+  : InteractionCalculator::InteractionCalculator(parameters) {
+  type = parameters.chainMdType;
+}
+
 void ChainInteractionCalculator::calculateDihedral (int i, int j, int k, int l, const std::vector<double>& pos,
   const std::vector<std::vector<bool>>& bonds) {
   
@@ -98,11 +103,11 @@ void ChainInteractionCalculator::calculateDihedral (int i, int j, int k, int l, 
   dihedral_ijkl = std::atan2(y, x);
 }
 
-void ChainInteractionCalculator::calculate(const std::vector<double>& positions, const std::vector<double>& bonds, std::vector<double>& forces) {
+void ChainInteractionCalculator::calculate(const std::vector<double>& positions, const std::vector<std::vector<bool>>& bonds, std::vector<double>& forces) {
     resetVariablesToZero(forces);
     
-    if(par.chainMdType == complete){
-        calculateA();
+    if(par.chainMdType == ChainSimType::complete){
+        calculateA(positions, bonds);
     }        
 
     for (int i = 0; i < par.numberAtoms - 1; i++) {
@@ -134,14 +139,14 @@ void ChainInteractionCalculator::calculatePotentialA(){
 
 
 void ChainInteractionCalculator::calculateInteraction(int i, int j, const std::vector<double>& positions,
-      std::vector<double>& bonds, std::vector<double>& forces) {
+      const std::vector<std::vector<bool>>& bonds, std::vector<double>& forces) {
     applyPeriodicBoundaryConditions(i, j, positions);
     calculateSquaredDistance();
     
     bond_ij = bonds[i][j];
     
     if (bond_ij && i > 0 && j < par.numberAtoms-1)
-      calculateDihedral(i-1, i, j, j+1, positions);
+      calculateDihedral(i-1, i, j, j+1, positions, bonds);
     
     if (rij2 < rcutf2) {
         calculatePotentialAndForceMagnitude();
@@ -171,7 +176,7 @@ void ChainInteractionCalculator::calculatePotentialAndForceMagnitude() {
         // E_cov = E_bond + E_angle + E_dihedral
         // E_bond:
         if (bond_ij) {
-          eij += kb * std::pow(std::sqrt(rij) - std::sqrt(r0), 2);
+          eij += kb * std::pow(std::sqrt(rij2) - std::sqrt(r0), 2);
         }
         
         // E_angle: is done in calculateA
@@ -187,10 +192,10 @@ void ChainInteractionCalculator::initializeValues() {
 
     Vn = 5.86; // kJ / mol
     gamma = 0; // rad
-    ka = 167.36 // kJ / (mol * rad^2)
-    kb = 1294.04e2 // kJ / (mol * nm^2)
-    theta0 = 1.911 // rad
-    r0 = 0.1526 // nm
+    ka = 167.36; // kJ / (mol * rad^2)
+    kb = 1294.04e2; // kJ / (mol * nm^2)
+    theta0 = 1.911; // rad
+    r0 = 0.1526; // nm
 }
 
 
