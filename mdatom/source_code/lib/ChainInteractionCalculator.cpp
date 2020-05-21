@@ -140,7 +140,7 @@ void ChainInteractionCalculator::calculateInteraction(int i, int j, const std::v
     
     bond_ij = bonds[i][j];
     
-    if (bond_ij)
+    if (bond_ij && i > 0 && j < par.numberAtoms-1)
       calculateDihedral(i-1, i, j, j+1, positions);
     
     if (rij2 < rcutf2) {
