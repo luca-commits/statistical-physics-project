@@ -47,7 +47,7 @@ class ChainInteractionCalculator : public InteractionCalculator{
       void resetPotentialToZero();
       void initializeValues () override;
 
-
+      double r0;
       double theta0;
       double gamma;
 

@@ -171,7 +171,7 @@ void ChainInteractionCalculator::calculatePotentialAndForceMagnitude() {
         // E_cov = E_bond + E_angle + E_dihedral
         // E_bond:
         if (bond_ij) {
-          eij += kb * std::pow(std::sqrt(rij) - std::sqrt(rij_0), 2);
+          eij += kb * std::pow(std::sqrt(rij) - std::sqrt(r0), 2);
         }
         
         // E_angle: is done in calculateA
@@ -182,6 +182,15 @@ void ChainInteractionCalculator::calculatePotentialAndForceMagnitude() {
     }
 }
 
+void ChainInteractionCalculator::initializeValues() {
+    InteractionCalculator::initializeValues();
 
+    Vn = 5.86; // kJ / mol
+    gamma = 0; // rad
+    ka = 167.36 // kJ / (mol * rad^2)
+    kb = 1294.04e2 // kJ / (mol * nm^2)
+    theta0 = 1.911 // rad
+    r0 = 0.1526 // nm
+}
 
 
