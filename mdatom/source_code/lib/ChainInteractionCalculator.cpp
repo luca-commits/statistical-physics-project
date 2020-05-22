@@ -108,7 +108,7 @@ void ChainInteractionCalculator::calculate(const std::vector<double>& positions,
     initializeValues();
     
     if(par.chainMdType == ChainSimType::complete){
-        calculateA(positions, bonds);
+        // calculateA(positions, bonds);
     }        
 
     for (int i = 0; i < par.numberAtoms - 1; i++) {
@@ -131,7 +131,7 @@ void ChainInteractionCalculator::calculateInteractionA(int i, const std::vector<
                                                               const std::vector<std::vector<bool>>& bonds){
     calculateAngle(i-1, i, i + 1, positions, bonds);
     calculatePotentialA();
-    std::cout << "angle contribution to energy: " << ei << " " << angle_ijk << std::endl;
+    // std::cout << "angle contribution to energy: " << ei << " " << angle_ijk << std::endl;
     potentialEnergy += ei;
 }
 
@@ -145,6 +145,7 @@ void ChainInteractionCalculator::calculateInteraction(int i, int j, const std::v
     applyPeriodicBoundaryConditions(i, j, positions);
     calculateSquaredDistance();
     
+    dij = 0;
     
     if (type != ChainSimType::noChains) {
       bond_ij = bonds[i][j];
@@ -152,24 +153,27 @@ void ChainInteractionCalculator::calculateInteraction(int i, int j, const std::v
       
       // bond and dihedral contribution to potential energy
       if (bond_ij) {
-          std::cout << "bond between: " << i << " " << j << std::endl;
           double val1 = kb * std::pow(std::sqrt(rij2) - r0, 2);
           potentialEnergy += val1;
+          dij += 2 * kb * (std::sqrt(rij2) - r0) / std::sqrt(rij2);
+          
           std::cout << "bond contribution to energy:" << val1 << " dist to eq: " << (std::sqrt(rij2) - r0) << std::endl;
       }
       
-      if (i > 0 && i < par.numberAtoms-1 && j < par.numberAtoms-1)
+      if (j == i+1 && j < par.numberAtoms && i > 0)
           calculateDihedral(i-1, i, j, j+1, positions, bonds);
           double val2 = Vn * 3. * (1. + std::cos(3 * dihedral_ijkl - gamma));
-          potentialEnergy += val2;
-          std::cout << "dihedral contribution to energy: " << val2 << " dihedral angle: " << dihedral_ijkl << std::endl;
+          // potentialEnergy += val2;
+          /// std::cout << "dihedral contribution to energy: " << val2 << " dihedral angle: " << dihedral_ijkl << std::endl;
     }
     
     if (rij2 < rcutf2) {
         calculatePotentialAndForceMagnitude();
         potentialEnergy += eij;
-        calculateForceAndVirialContributions(i, j, forces);
+        
     }
+    
+    calculateForceAndVirialContributions(i, j, forces);
     
     radialDistribution.addPairAtSquaredDistance(rij2);
 }
@@ -181,9 +185,11 @@ void ChainInteractionCalculator::calculatePotentialAndForceMagnitude() {
     double crh = c12 * riji6;
     double crhh = crh - 2 * c6; //  L-J potential work variable
     eij= crhh * riji6;
+    // derived with WolframAlpha
+    // dij += 12 * par.epsilonLJ * sig6 * (std::pow(rij2, 3) - sig6) / std::pow(rij2, 7);
     dij= 6. * (crh + crhh) * riji6 * riji2;
     
-    std::cout << "LJ-contribution to energy: " << eij << std::endl;
+      // std::cout << "LJ-contribution to energy: " << eij << std::endl;
 }
 
 void ChainInteractionCalculator::initializeValues() {
