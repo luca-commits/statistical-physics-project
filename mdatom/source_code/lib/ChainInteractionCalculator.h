@@ -59,7 +59,13 @@ class ChainInteractionCalculator : public InteractionCalculator{
       unsigned int n;
 
       double ei; //potential due to atom i
-
+      double dijb;//force due to bonds on the atoms i and j of a bond
+      double did;//force due to dihedrals on the first atom of the dihedral quartett
+      double djd;//force due to dihedrals on the second atom of the dihedral quartett
+      double dkd;//force due to dihedrals on the third atom of the dihedral quartett
+      double dld;//force due to dihedrals on the fourth atom of the dihedral quartett
+      double dia;//force on the first element of the angle ijk 
+      double dja;//force on the third element of hte angle ijk (all these forces are devided by the inter-particle vector)
       ChainSimType type;
 };  
 
