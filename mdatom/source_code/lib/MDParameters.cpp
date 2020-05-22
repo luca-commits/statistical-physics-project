@@ -129,7 +129,7 @@ ChainSimType chainSimTypeFromInt(int ntt){
     else if (ntt == 2)
         return ChainSimType::complete;
     else
-        throw std::runtime_error("Invalid value for Chain-MDType");
+        throw std::runtime_error("Invalid value for Chain-MDType " + ntt);
 }
 
 int chainSimTypeToInt(ChainSimType ntt) {

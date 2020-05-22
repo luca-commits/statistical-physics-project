@@ -33,9 +33,15 @@ void ChainMDSimulation::performSimulation(const MDParameters& par,
 void ChainMDSimulation::initializeCoordinatesVelocitiesAndBonds(const std::string& coordinateFile,
   const std::string& bondsFile) {
   
-  // Use initializer class to build coords, velocities and bonds
-  CoordinatesVelocitiesAndBondsInitializer xvbInitializer(output, parameters, coordinateFile, bondsFile);
-  xvbInitializer.initialize(positions, velocities, bonds);
+  if (parameters.chainMdType == ChainSimType::complete) {
+    // Use initializer class to build coords, velocities and bonds
+    CoordinatesVelocitiesAndBondsInitializer xvbInitializer(output, parameters, coordinateFile, bondsFile);
+    xvbInitializer.initialize(positions, velocities, bonds);
+  } else {
+    CoordinatesAndVelocitiesInitializer xvInitializer(output, parameters, coordinateFile);
+    xvInitializer.initialize(positions, velocities);
+  }
+  
 }
 
 void ChainMDSimulation::executeMDIterations() {

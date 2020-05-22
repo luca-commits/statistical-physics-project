@@ -5,9 +5,9 @@ Test 6, 1000 atoms
 #                  BoxSize(x)                 BoxSize(y)                 BoxSize(z)
                        10.436                     10.436                     10.436
 #               NumberMDSteps                InitialTime                   TimeStep
-                         1000                          0                      0.005
+                         1000                          0                      0.001
 #          InitialTemperature          TargetTemperature    TemperatureCouplingTime
-                            0                       1e-7                        0.1
+                         1e-7                       1e-7                        0.1
 #                  RandomSeed
                      10021988
 #            XVInitialization  CoordInitializationSpread              FinalXVOutput
@@ -15,10 +15,10 @@ Test 6, 1000 atoms
 #          NAtomsOnBoxEdge(x)         NAtomsOnBoxEdge(y)         NAtomsOnBoxEdge(z)
                            10                         10                         10
 #                   EpsilonLJ                    SigmaLJ    InteractionCutoffRadius
-                            1                          1                        2.5
+                       0.4577                     0.3816                        2.5
 #    PropertyPrintingInterval    NumberRadialDistrPoints    RadialDistrCutoffRadius
                             1                        100                        2.5
 #            TrajectoryOutput     TrajectoryOutputFormat   TrajectoryOutputInterval
                             0                          2                          5
 #         ChainSimulationType                      Theta                      Gamma
-                            2                         13                         15
+                            0                         13                         15

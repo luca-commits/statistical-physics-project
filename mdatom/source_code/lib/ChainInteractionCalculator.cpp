@@ -146,16 +146,20 @@ void ChainInteractionCalculator::calculateInteraction(int i, int j, const std::v
     applyPeriodicBoundaryConditions(i, j, positions);
     calculateSquaredDistance();
     
-    bond_ij = bonds[i][j];
     
-    // bond contribution to potential energy
-    if (bond_ij) {
-        double val = kb * std::pow(std::sqrt(rij2) - r0, 2);
-        potentialEnergy += val;
-        std::cout << "bond contribution to energy:" << val << std::endl;
+    if (type != ChainSimType::noChains) {
+      bond_ij = bonds[i][j];
+    
+      // bond contribution to potential energy
+      if (bond_ij) {
+          double val = kb * std::pow(std::sqrt(rij2) - r0, 2);
+          potentialEnergy += val;
+          std::cout << "bond contribution to energy:" << val << std::endl;
+          
+          calculateDihedral(i-1, i, j, j+1, positions, bonds);
+      }
     }
     
-    calculateDihedral(i-1, i, j, j+1, positions, bonds);
     
     if (rij2 < rcutf2) {
         calculatePotentialAndForceMagnitude();
@@ -173,7 +177,7 @@ void ChainInteractionCalculator::calculatePotentialAndForceMagnitude() {
     double riji2 = 1.0 / rij2; // inverse inter-particle distance squared
     double riji6 = riji2 * riji2 * riji2; // inverse inter-particle distance (6th power)
     double crh = c12 * riji6;
-    double crhh = crh - c6; //  L-J potential work variable
+    double crhh = crh - 2 * c6; //  L-J potential work variable
     eij= crhh * riji6;
     dij= 6. * (crh + crhh) * riji6 * riji2;
     
@@ -199,7 +203,13 @@ void ChainInteractionCalculator::calculatePotentialAndForceMagnitude() {
 }
 
 void ChainInteractionCalculator::initializeValues() {
-    InteractionCalculator::initializeValues();
+    sig6 = par.sigmaLJ * par.sigmaLJ;
+    sig6 = sig6 * sig6 * sig6;
+    c6 = par.epsilonLJ * sig6;
+    c12 = c6 * sig6;
+    rcutf2 = par.interactionCutoffRadius * par.interactionCutoffRadius;
+    for (int m = 0; m < 3; m++)
+        inverseBoxLength[m] = 1.0 / par.boxSize[m];
 
     Vn = 5.86; // kJ / mol
     gamma = 0; // rad
