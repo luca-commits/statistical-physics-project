@@ -66,7 +66,11 @@ void ChainInteractionCalculator::calculateAngle(int i, int j, int k, const std::
   double a = r_ij * r_ij + r_jk * r_jk - r_ik * r_ik;
   double b = 2 * r_ij * r_jk;
 
-  angle_ijk = std::acos(r_ij * r_ij + r_jk * r_jk - r_ik * r_ik) / (2 * r_ij * r_jk);
+  double c = a/b;
+  double d = std::acos(d);
+
+  angle_ijk = d;
+  //angle_ijk = std::acos(r_ij * r_ij + r_jk * r_jk - r_ik * r_ik) / (2 * r_ij * r_jk);
 }
 
 ChainInteractionCalculator::ChainInteractionCalculator(const MDParameters& parameters) 
