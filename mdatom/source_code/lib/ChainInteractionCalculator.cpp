@@ -130,12 +130,12 @@ void ChainInteractionCalculator::calculateA (const std::vector<double>& position
 void ChainInteractionCalculator::calculateInteractionA(int i, const std::vector<double>& positions, 
                                                               const std::vector<std::vector<bool>>& bonds){
     calculateAngle(i-1, i, i + 1, positions, bonds);
-    calculatePotentialA();
+    calculatePotentialAndForceMagnitude();
     // std::cout << "angle contribution to energy: " << ei << " " << angle_ijk << std::endl;
     potentialEnergy += ei;
 }
 
-void ChainInteractionCalculator::calculatePotentialA(){
+void ChainInteractionCalculator::calculatePotentialAndForceMagnitudeA(){
     ei = ka * std::pow((angle_ijk - theta0), 2);
 }
 
@@ -189,6 +189,7 @@ void ChainInteractionCalculator::calculatePotentialAndForceMagnitude() {
     // dij += 12 * par.epsilonLJ * sig6 * (std::pow(rij2, 3) - sig6) / std::pow(rij2, 7);
     dij= 6. * (crh + crhh) * riji6 * riji2;
     
+
       // std::cout << "LJ-contribution to energy: " << eij << std::endl;
 }
 

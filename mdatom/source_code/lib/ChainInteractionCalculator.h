@@ -32,12 +32,16 @@ class ChainInteractionCalculator : public InteractionCalculator{
       void calculateInteractionA (int i, const std::vector<double>& positions,
                                   const std::vector<std::vector<bool>>&  bonds);
       //calculates only the potential contribution of the angle 
-      void calculatePotentialA();
+      void calculatePotentialAndForceMagnitudeA();
       //set the dihedral angle + does everything that calculateInteraction does (in the base class)
       void calculateInteraction (int i, int j, const std::vector<double>& positions,
                                  const std::vector<std::vector<bool>>& bonds, std::vector<double>& forces);
       //calculates the potential contribution from Coulomb interaction, bond terms and dihedral terms
       void calculatePotentialAndForceMagnitude () override;
+      
+      void calculatePotentialAndVirialContribution() override;
+
+      void calculatePotentialAndVirialContributionA();
 
       //This function is called by InteractionCalculatorA. Sice calculateInteractionA only adds to
       // the potential, only the latter has to be reset to zero
