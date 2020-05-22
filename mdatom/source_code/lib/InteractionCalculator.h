@@ -48,7 +48,9 @@ class InteractionCalculator{
 
     double xij[3]; // Inter-particle vector
     double rij2; // Inter-particle distance squared
-    double eij, dij; // eij = energy between i and j, dij = distance between i and j
+    double eij, dij; // eij = energy between i and j, (dij = distance between i and j)//dij isn't the distance
+                                                                                     //it's the derivative of the potential
+                                                                                    //devided by the inter-particle vector    
 };
 
 #endif // INTERACTIONCALCULATOR_H
