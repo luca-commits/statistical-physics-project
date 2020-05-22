@@ -1,0 +1,29 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "(gdb) Launch",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "/home/lucaw/develop/statistical_physics/spcs_6.9/mdatom/source_code/build/mdatom",
+            "args": ["/home/lucaw/develop/statistical_physics/spcs_6.9/mdatom/input_files/params.inp" , 
+                     "/home/lucaw/develop/statistical_physics/spcs_6.9/mdatom/input_files/coords.inp",
+                     "/home/lucaw/develop/statistical_physics/spcs_6.9/mdatom/input_files/bonds.inp"],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ]
+        }
+    ]
+}

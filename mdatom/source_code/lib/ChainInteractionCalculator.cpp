@@ -52,10 +52,10 @@ void ChainInteractionCalculator::calculateAngle(int i, int j, int k, const std::
     return;
   }
   
-  if (bonds[i][j] && bonds[j][k]) {
-    angle_ijk = 0;
-    return;
-  }
+//  if (bonds[i][j] && bonds[j][k]) {
+ //   angle_ijk = 0;
+//    return;
+ // }
   
   double r_ij = dist(i, j, positions);
   double r_ik = dist(i, k, positions);
@@ -208,6 +208,7 @@ void ChainInteractionCalculator::initializeValues() {
     kb = 1294.04e2; // kJ / (mol * nm^2)
     theta0 = 1.911; // rad
     r0 = 0.1526; // nm
+
 }
 
 
