@@ -21,10 +21,7 @@
                 "cmake -DCMAKE_BUILD_TYPE=Debug .."
             ],
             "problemMatcher": [],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            }
+            "group": "build"
         },
         {
             "label": "make",
@@ -38,7 +35,10 @@
             "dependsOn": [
                 "cmake"
             ],
-            "group": "build",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
             "problemMatcher": []
         },
         {
@@ -53,7 +53,9 @@
             ],
             "options": {
                 "cwd": "/usr/bin"
-            }
+            },
+            "problemMatcher": [],
+            "group": "build"
         }
     ]
 }

@@ -46,21 +46,26 @@ double norm(int i, const std::vector<double>& pos) {
 
 void ChainInteractionCalculator::calculateAngle(int i, int j, int k, const std::vector<double>& positions,
                           const std::vector<std::vector<bool>>& bonds) {
+
+  
     
   if (i == j || i == k || j == k) {
     angle_ijk = 0;
     return;
   }
   
-//  if (bonds[i][j] && bonds[j][k]) {
- //   angle_ijk = 0;
-//    return;
- // }
-  
+/*   if (!(bonds[i][j] && bonds[j][k])) {
+    angle_ijk = theta0; //so it won't contribute to energy
+    return;
+  }
+ */  
   double r_ij = dist(i, j, positions);
   double r_ik = dist(i, k, positions);
   double r_jk = dist(j, k, positions);
   
+  double a = r_ij * r_ij + r_jk * r_jk - r_ik * r_ik;
+  double b = 2 * r_ij * r_jk;
+
   angle_ijk = std::acos(r_ij * r_ij + r_jk * r_jk - r_ik * r_ik) / (2 * r_ij * r_jk);
 }
 
@@ -153,7 +158,7 @@ void ChainInteractionCalculator::calculateInteraction(int i, int j, const std::v
     if (bond_ij) {
         double val = kb * std::pow(std::sqrt(rij2) - r0, 2);
         potentialEnergy += val;
-   //     std::cout << "bond contribution to energy:" << val << std::endl;
+      //  std::cout << "bond contribution to energy:" << val << std::endl;
     }
     
     calculateDihedral(i-1, i, j, j+1, positions, bonds);
@@ -178,7 +183,7 @@ void ChainInteractionCalculator::calculatePotentialAndForceMagnitude() {
     eij= crhh * riji6;
     dij= 6. * (crh + crhh) * riji6 * riji2;
     
- //   std::cout << "LJ-contribution to energy: " << eij << std::endl;
+    std::cout << "LJ-contribution to energy: " << eij << std::endl;
     
     if (type != ChainSimType::noChains) {
         // Contribution by Coulomb is 0 because we are looking at interaction
@@ -193,7 +198,7 @@ void ChainInteractionCalculator::calculatePotentialAndForceMagnitude() {
           double val2 = Vn * 3. * (1. + std::cos(3 * dihedral_ijkl - gamma));
         
           eij += val2;
-       //   std::cout << "dihedral contribution to energy: " << val2 << std::endl;
+      //    std::cout << "dihedral contribution to energy: " << val2 << std::endl;
         }
         
     }
