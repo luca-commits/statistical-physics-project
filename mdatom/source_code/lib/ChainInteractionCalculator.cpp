@@ -208,13 +208,6 @@ void ChainInteractionCalculator::initializeValues() {
     kb = 1294.04e2; // kJ / (mol * nm^2)
     theta0 = 1.911; // rad
     r0 = 0.1526; // nm
-    sig6 = par.sigmaLJ * par.sigmaLJ;
-    sig6 = sig6 * sig6 * sig6;
-    c6 = 4. * par.epsilonLJ * sig6;
-    c12 = c6 * sig6;
-    rcutf2 = par.interactionCutoffRadius * par.interactionCutoffRadius;
-    for (int m = 0; m < 3; m++)
-        inverseBoxLength[m] = 1.0 / par.boxSize[m];
 }
 
 
