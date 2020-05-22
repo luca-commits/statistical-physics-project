@@ -52,7 +52,7 @@ void ChainInteractionCalculator::calculateAngle(int i, int j, int k, const std::
     return;
   }
   
-  if (bonds[i][j] && bonds[j][k]) {
+  if (!bonds[i][j] || !bonds[j][k]) {
     angle_ijk = 0;
     return;
   }
@@ -61,7 +61,7 @@ void ChainInteractionCalculator::calculateAngle(int i, int j, int k, const std::
   double r_ik = dist(i, k, positions);
   double r_jk = dist(j, k, positions);
   
-  angle_ijk = std::acos(r_ij * r_ij + r_jk * r_jk - r_ik * r_ik) / (2 * r_ij * r_jk);
+  angle_ijk = std::acos((r_ij * r_ij + r_jk * r_jk - r_ik * r_ik) / (2 * r_ij * r_jk));
 }
 
 ChainInteractionCalculator::ChainInteractionCalculator(const MDParameters& parameters) 
@@ -79,19 +79,19 @@ void ChainInteractionCalculator::calculateDihedral (int i, int j, int k, int l, 
   // Calculations taken from 
   // https://math.stackexchange.com/questions/47059/how-do-i-calculate-a-dihedral-angle-given-cartesian-coordinates
   std::vector<double> b1;
-  b1.push_back(pos[j  ] - pos[i  ]);
-  b1.push_back(pos[j+1] - pos[i+1]);
-  b1.push_back(pos[j+2] - pos[i+2]);
+  b1.push_back(pos[3*j  ] - pos[3*i  ]);
+  b1.push_back(pos[3*j+1] - pos[3*i+1]);
+  b1.push_back(pos[3*j+2] - pos[3*i+2]);
   
   std::vector<double> b2;
-  b2.push_back(pos[k  ] - pos[j  ]);
-  b2.push_back(pos[k+1] - pos[j+1]);
-  b2.push_back(pos[k+2] - pos[j+2]);
+  b2.push_back(pos[3*k  ] - pos[3*j  ]);  
+  b2.push_back(pos[3*k+1] - pos[3*j+1]);
+  b2.push_back(pos[3*k+2] - pos[3*j+2]);
   
   std::vector<double> b3;
-  b3.push_back(pos[l  ] - pos[k  ]);
-  b3.push_back(pos[l+1] - pos[k+1]);
-  b3.push_back(pos[l+2] - pos[k+2]);
+  b3.push_back(pos[3*l  ] - pos[3*k  ]);
+  b3.push_back(pos[3*l+1] - pos[3*k+1]);
+  b3.push_back(pos[3*l+2] - pos[3*k+2]);
   
   std::vector<double> n1 = cross(b1, b2);
   std::vector<double> n2 = cross(b2, b3);
@@ -100,7 +100,6 @@ void ChainInteractionCalculator::calculateDihedral (int i, int j, int k, int l, 
   
   double x = dot(n1, n2) / (norm(0, n1) * norm(0, n2));
   double y = dot(m1, n2) / (norm(0, n1) * norm(0, b2) * norm(0, n2));
-  
   dihedral_ijkl = std::atan2(y, x);
 }
 
@@ -132,7 +131,7 @@ void ChainInteractionCalculator::calculateInteractionA(int i, const std::vector<
                                                               const std::vector<std::vector<bool>>& bonds){
     calculateAngle(i-1, i, i + 1, positions, bonds);
     calculatePotentialA();
-    std::cout << "angle contribution to energy: " << ei << std::endl;
+    std::cout << "angle contribution to energy: " << ei << " " << angle_ijk << std::endl;
     potentialEnergy += ei;
 }
 
@@ -149,17 +148,22 @@ void ChainInteractionCalculator::calculateInteraction(int i, int j, const std::v
     
     if (type != ChainSimType::noChains) {
       bond_ij = bonds[i][j];
-    
-      // bond contribution to potential energy
+
+      
+      // bond and dihedral contribution to potential energy
       if (bond_ij) {
-          double val = kb * std::pow(std::sqrt(rij2) - r0, 2);
-          potentialEnergy += val;
-          std::cout << "bond contribution to energy:" << val << std::endl;
-          
-          calculateDihedral(i-1, i, j, j+1, positions, bonds);
+          std::cout << "bond between: " << i << " " << j << std::endl;
+          double val1 = kb * std::pow(std::sqrt(rij2) - r0, 2);
+          potentialEnergy += val1;
+          std::cout << "bond contribution to energy:" << val1 << " dist to eq: " << (std::sqrt(rij2) - r0) << std::endl;
       }
+      
+      if (i > 0 && i < par.numberAtoms-1 && j < par.numberAtoms-1)
+          calculateDihedral(i-1, i, j, j+1, positions, bonds);
+          double val2 = Vn * 3. * (1. + std::cos(3 * dihedral_ijkl - gamma));
+          potentialEnergy += val2;
+          std::cout << "dihedral contribution to energy: " << val2 << " dihedral angle: " << dihedral_ijkl << std::endl;
     }
-    
     
     if (rij2 < rcutf2) {
         calculatePotentialAndForceMagnitude();
@@ -171,8 +175,6 @@ void ChainInteractionCalculator::calculateInteraction(int i, int j, const std::v
 }
 
 void ChainInteractionCalculator::calculatePotentialAndForceMagnitude() {
-    // E_pot,tot = E_vdW + E_coul + E_cov
-    
     // E_vdW: Lennard-Jones Potential
     double riji2 = 1.0 / rij2; // inverse inter-particle distance squared
     double riji6 = riji2 * riji2 * riji2; // inverse inter-particle distance (6th power)
@@ -182,24 +184,6 @@ void ChainInteractionCalculator::calculatePotentialAndForceMagnitude() {
     dij= 6. * (crh + crhh) * riji6 * riji2;
     
     std::cout << "LJ-contribution to energy: " << eij << std::endl;
-    
-    if (type != ChainSimType::noChains) {
-        // Contribution by Coulomb is 0 because we are looking at interaction
-        // between atoms (electrically neutral)
-        
-        // E_cov = E_bond + E_angle + E_dihedral
-        
-        // E_angle: is done in calculateA
-        
-        // E_dihedral:
-        if (bond_ij) {
-          double val2 = Vn * 3. * (1. + std::cos(3 * dihedral_ijkl - gamma));
-        
-          eij += val2;
-          std::cout << "dihedral contribution to energy: " << val2 << std::endl;
-        }
-        
-    }
 }
 
 void ChainInteractionCalculator::initializeValues() {
