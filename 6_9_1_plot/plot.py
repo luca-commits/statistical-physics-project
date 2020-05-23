@@ -6,54 +6,54 @@ rc('text', usetex=True)
 
 def plotCO(ax):
   # For C-O bond, values taken from Cornell (1995) paper (p. 5194)and Morse (1929) paper (p. 62)
-  D_e = 91600 # wave no = 1 / cm
-  r_0 = 1.229 # Angström
-  a = 2.29 # 1 / Angström
-  k_r = 12.53e-3 # 1 / (Angström^3)
+  D_e = 5.65e7 # 91600 # wave no = 1 / cm (online)
+  r_0 = 1.229 # Angström (Morse)
+  a = 2.29 # 1 / Angström (Morse)
+  k_r = 0.06 # 12.53e-3 # 1 / (Angström^3) // // 1900 N / m (online)
   
   r = np.arange(0, 4, 0.01)
   
-  V_harmonic = 0.5 * k_r * (r - r_0)**2 * 10e8 # wave no = 1 / cm
+  V_harmonic = 0.5 * k_r * (r - r_0)**2 * 10e10 # wave no = 1 / cm
   V_morse = D_e * (1 - np.exp(-a * (r - r_0)))**2 # wave no = 1 / cm
   
   ax.plot(r, V_morse, label='Morse potential')
   ax.plot(r, V_harmonic, label='harmonic potential')
   ax.axhline(D_e, 0, 1, color='black', linestyle='--', linewidth=1, label='dissociation energy') 
   
-  ax.set_ylim(0, 150000)
+  ax.set_ylim(0, 10e7)  
   ax.set_xlim(0, 4)
   
   ax.minorticks_on()
   
   ax.set(title="$ CO $ bond")
   ax.set(xlabel="nuclear seperation (in Angström)")
-  ax.set(ylabel="energy (in wave numbers)")
+  ax.set(ylabel="energy (in $ 1 / m $)")
   ax.legend()
 
 def plotN2(ax):
-  # For H_2 bond, values taken from Cornell (1995) paper (p. 5194)and Morse (1929) paper (p. 62)
-  D_e = 40100 # wave no = 1 / cm
-  r_0 = 0.76 # Angström
-  a = 2.56 # 1 / Angström
-  k_r = 16.131e-3 # 1 / (Angström^3) // k_r = 510 N/m
+  # For N_2 bond, values taken from Cornell (1995) paper (p. 5194)and Morse (1929) paper (p. 62)
+  D_e = 4.95e7 # wave no = 1 / cm // 945 kJ / mol (online)
+  r_0 = 1.09 # Angström (Morse)
+  a = 2.56 # 1 / Angström (Morse)
+  k_r = 0.0723 # 1 / (Angström^3) // k_r = 2287 N/m (online)
   
   r = np.arange(0, 4, 0.01)
   
-  V_harmonic = 0.5 * k_r * (r - r_0)**2 * 10e8 # wave no = 1 / cm
-  V_morse = D_e * (1 - np.exp(-a * (r - r_0)))**2 # wave no = 1 / cm
+  V_harmonic = 0.5 * k_r * (r - r_0)**2 * 10e10 # wave no = 1 / m
+  V_morse = D_e * (1 - np.exp(-a * (r - r_0)))**2 # wave no = 1 / m
   
   ax.plot(r, V_morse, label='Morse potential')
   ax.plot(r, V_harmonic, label='harmonic potential')
   ax.axhline(D_e, 0, 1, color='black', linestyle='--', linewidth=1, label='dissociation energy') 
-  
-  ax.set_ylim(0, 80000)
+
+  ax.set_ylim(0, 10e7)
   ax.set_xlim(0, 4)
   
   ax.minorticks_on()
   
   ax.set(title="$ N_2 $ bond")
   ax.set(xlabel="nuclear seperation (in Angström)")
-  ax.set(ylabel="energy (in wave numbers)")
+  ax.set(ylabel="energy (in $ 1 / m $)")
   ax.legend()
 
 def main():
