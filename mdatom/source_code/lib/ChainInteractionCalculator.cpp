@@ -155,7 +155,9 @@ void ChainInteractionCalculator::calculateInteraction(int i, int j, const std::v
       if (bond_ij) {
           double val1 = kb * std::pow(std::sqrt(rij2) - r0, 2);
           potentialEnergy += val1;
-          dij += 2 * kb * (std::sqrt(rij2) - r0) / std::sqrt(rij2);
+          dij -= 2 * kb * (std::sqrt(rij2) - r0);
+
+          std::cout << "dij from bond  " << 2 * kb * (std::sqrt(rij2) - r0) << std::endl;
           
           std::cout << "bond contribution to energy:" << val1 << " dist to eq: " << (std::sqrt(rij2) - r0) << std::endl;
       }
@@ -187,8 +189,11 @@ void ChainInteractionCalculator::calculatePotentialAndForceMagnitude() {
     eij= crhh * riji6;
     // derived with WolframAlpha
     // dij += 12 * par.epsilonLJ * sig6 * (std::pow(rij2, 3) - sig6) / std::pow(rij2, 7);
-    dij= 6. * (crh + crhh) * riji6 * riji2;
-    
+    dij += 6. * (crh + crhh) * riji6 * riji2;
+
+    std::cout << "dij from LJ  " << 6. * (crh + crhh) * riji6 * riji2 << std::endl;
+
+
       // std::cout << "LJ-contribution to energy: " << eij << std::endl;
 }
 
