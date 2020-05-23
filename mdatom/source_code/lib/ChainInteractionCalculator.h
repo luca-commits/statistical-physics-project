@@ -66,6 +66,15 @@ class ChainInteractionCalculator : public InteractionCalculator{
       double dld;//force due to dihedrals on the fourth atom of the dihedral quartett
       double dia;//force on the first element of the angle ijk 
       double dja;//force on the third element of hte angle ijk (all these forces are devided by the inter-particle vector)
+
+      vector<int> pa, pb; //these are the orthonormal vectors I need for the calculation of force contributions
+
+      double length_one_dihedral; //the length of the first bond in a dihedral quartett
+      double length_two_dihedral; 
+      double length_three_dihedral;
+      
+      double length_one_angle;
+      double length_two_angle;
       ChainSimType type;
 };  
 
