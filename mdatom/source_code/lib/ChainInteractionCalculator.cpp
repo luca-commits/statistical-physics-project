@@ -147,24 +147,8 @@ void ChainInteractionCalculator::calculateInteraction(int i, int j, const std::v
     
     dij = 0;
     
-    if (type != ChainSimType::noChains) {
-      bond_ij = bonds[i][j];
-
-      
-      // bond and dihedral contribution to potential energy
-      if (bond_ij) {
-          double val1 = kb * std::pow(std::sqrt(rij2) - r0, 2);
-          potentialEnergy += val1;
-          dij += 2 * kb * (std::sqrt(rij2) - r0) / std::sqrt(rij2);
-          
-          std::cout << "bond contribution to energy:" << val1 << " dist to eq: " << (std::sqrt(rij2) - r0) << std::endl;
-      }
-      
-      if (j == i+1 && j < par.numberAtoms && i > 0)
-          calculateDihedral(i-1, i, j, j+1, positions, bonds);
-          double val2 = Vn * 3. * (1. + std::cos(3 * dihedral_ijkl - gamma));
-          // potentialEnergy += val2;
-          /// std::cout << "dihedral contribution to energy: " << val2 << " dihedral angle: " << dihedral_ijkl << std::endl;
+    if (j == i+1 && j < par.numberAtoms && i > 0)
+        calculateDihedral(i-1, i, j, j+1, positions, bonds);
     }
     
     if (rij2 < rcutf2) {
@@ -185,12 +169,25 @@ void ChainInteractionCalculator::calculatePotentialAndForceMagnitude() {
     double crh = c12 * riji6;
     double crhh = crh - 2 * c6; //  L-J potential work variable
     eij= crhh * riji6;
+    
+    //potential contribution from dihedrals
+    eij += Vn * 3. * (1. + std::cos(3 * dihedral_ijkl - gamma));
+
+    //potential contribution from bonds
+    eij += kb * std::pow(std::sqrt(rij2) - r0, 2);
+
     // derived with WolframAlpha
     // dij += 12 * par.epsilonLJ * sig6 * (std::pow(rij2, 3) - sig6) / std::pow(rij2, 7);
     dij= 6. * (crh + crhh) * riji6 * riji2;
-    
+   
+    //force contribution from bond  
+    dijb += 2 * kb * (std::sqrt(rij2) - r0) / std::sqrt(rij2);
 
-      // std::cout << "LJ-contribution to energy: " << eij << std::endl;
+    // std::cout << "LJ-contribution to energy: " << eij << std::endl;
+
+    //now comes the force contribution from the dihedral
+    //calculations taken from "Determination of Forces from a Potential in Molecular Dynamics (note)"
+    // of Bernard Monasse and Frederic Boussinot
 }
 
 void ChainInteractionCalculator::initializeValues() {

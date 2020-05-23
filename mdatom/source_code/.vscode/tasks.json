@@ -1,0 +1,61 @@
+{
+    "version": "2.0.0",
+    "command": "sh",
+    "args": [
+        "-c"
+    ],
+    "presentation": {
+        "echo": true,
+        "reveal": "always",
+        "focus": true,
+        "panel": "new"
+    },
+    "tasks": [
+        {
+            "label": "cmake",
+            "type": "shell",
+            "options": {
+                "cwd": "/home/lucaw/develop/statistical_physics/spcs_6.9/mdatom/source_code/build"
+            },
+            "args": [
+                "cmake -DCMAKE_BUILD_TYPE=Debug .."
+            ],
+            "problemMatcher": [],
+            "group": "build"
+        },
+        {
+            "label": "make",
+            "type": "shell",
+            "args": [
+                "make -j 8"
+            ],
+            "options": {
+                "cwd": "/home/lucaw/develop/statistical_physics/spcs_6.9/mdatom/source_code/build"
+            },
+            "dependsOn": [
+                "cmake"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "type": "shell",
+            "label": "g++ build active file",
+            "command": "/usr/bin/g++",
+            "args": [
+                "-g",
+                "${file}",
+                "-o",
+                "${fileDirname}/${fileBasenameNoExtension}"
+            ],
+            "options": {
+                "cwd": "/usr/bin"
+            },
+            "problemMatcher": [],
+            "group": "build"
+        }
+    ]
+}
