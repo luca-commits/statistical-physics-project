@@ -39,7 +39,7 @@ class ChainInteractionCalculator : public InteractionCalculator{
       //calculates the potential contribution from Coulomb interaction, bond terms and dihedral terms
       void calculatePotentialAndForceMagnitude () override;
       
-      void calculateForceAndVirialContributions(int i, int j, std::vector<double>& forces) () override;
+   //   void calculateForceAndVirialContributions(int i, int j, std::vector<double>& forces) override;
 
       void calculateForceAndVirialContributionsA(int i, std::vector<double>& forces);
 
@@ -58,16 +58,17 @@ class ChainInteractionCalculator : public InteractionCalculator{
       double kb, ka; // constants for bond contribution to potential
       unsigned int n;
 
-      double ei; //potential due to atom i
-      double dijb;//force due to bonds on the atoms i and j of a bond
-      double did;//force due to dihedrals on the first atom of the dihedral quartett
-      double djd;//force due to dihedrals on the second atom of the dihedral quartett
-      double dkd;//force due to dihedrals on the third atom of the dihedral quartett
-      double dld;//force due to dihedrals on the fourth atom of the dihedral quartett
-      double dia;//force on the first element of the angle ijk 
-      double dja;//force on the third element of hte angle ijk (all these forces are devided by the inter-particle vector)
+      double ei;    //potential due to atom i
 
-      vector<int> pa, pb; //these are the orthonormal vectors I need for the calculation of force contributions
+      double dijb;  //force due to bonds on the atoms i and j of a bond
+      double did;   //force due to dihedrals on the first atom of the dihedral quartett
+      double djd;   //force due to dihedrals on the second atom of the dihedral quartett
+      double dkd;   //force due to dihedrals on the third atom of the dihedral quartett
+      double dld;   //force due to dihedrals on the fourth atom of the dihedral quartett
+      double dia;   //force on the first element of the angle ijk 
+      double dja;   //force on the third element of hte angle ijk (all these forces are devided by the inter-particle vector)
+
+      std::vector<int> pa, pb; //these are the orthonormal vectors I need for the calculation of force contributions
 
       double length_one_dihedral; //the length of the first bond in a dihedral quartett
       double length_two_dihedral; 
@@ -75,6 +76,13 @@ class ChainInteractionCalculator : public InteractionCalculator{
       
       double length_one_angle;
       double length_two_angle;
+
+      double inter_particle_vector_one_dihedrali[3];
+      double inter_particle_vector_two_dihedral[3];
+      double inter_particle_vector_three_dihedral[3];
+      
+      double inter_particle_vector_one_angle[3];
+      double inter_particle_vector_two_angle[3];
       ChainSimType type;
 };  
 

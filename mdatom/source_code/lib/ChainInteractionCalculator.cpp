@@ -190,6 +190,8 @@ void ChainInteractionCalculator::calculatePotentialAndForceMagnitude() {
     // of Bernard Monasse and Frederic Boussinot
 }
 
+
+
 void ChainInteractionCalculator::initializeValues() {
     sig6 = par.sigmaLJ * par.sigmaLJ;
     sig6 = sig6 * sig6 * sig6;

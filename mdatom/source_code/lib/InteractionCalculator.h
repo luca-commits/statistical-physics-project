@@ -28,7 +28,7 @@ class InteractionCalculator{
     void applyPeriodicBoundaryConditions(int i, int j, const std::vector<double>& positions);
     void calculateSquaredDistance();
     virtual void calculatePotentialAndForceMagnitude();
-    void calculateForceAndVirialContributions(int i, int j, std::vector<double>& forces);
+    virtual void calculateForceAndVirialContributions(int i, int j, std::vector<double>& forces);
     virtual void calculateInteraction(int i, int j, const std::vector<double>& positions,
                                       std::vector<double>& forces);
 
