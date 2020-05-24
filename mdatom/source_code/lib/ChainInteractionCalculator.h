@@ -20,6 +20,8 @@ class ChainInteractionCalculator : public InteractionCalculator{
 
       void calculateAngle(int i, int j, int k, const std::vector<double>& positions,
                           const std::vector<std::vector<bool>>& bonds);
+      void calculateSecondAngle(int i, int j, int k, const std::vector<double>& positions,
+                                const std::vector<std::vector<bool>>& bonds);
       void calculateDihedral (int i, int j, int k, int l, const std::vector<double>& positions,
                               const std::vector<std::vector<bool>>& bonds); 
       //only works for chains
@@ -35,7 +37,8 @@ class ChainInteractionCalculator : public InteractionCalculator{
                                   const std::vector<std::vector<bool>>&  bonds);
       void calculateInteractionD(int i, int j, int k, int l, 
                                  const std::vector<double>& positions,
-                                 const std::vector<std::vector<bool>>& bonds);
+                                 const std::vector<std::vector<bool>>& bonds,
+                                 const std::vector<double>& forces);
       //calculates only the potential contribution of the angle 
       void calculatePotentialA();
       //set the dihedral angle + does everything that calculateInteraction does (in the base class)
@@ -43,8 +46,8 @@ class ChainInteractionCalculator : public InteractionCalculator{
                                  const std::vector<std::vector<bool>>& bonds, std::vector<double>& forces);
       //calculates the potential contribution from Coulomb interaction and  bond terms
       void calculatePotentialAndForceMagnitude () override;
-      void calculatePotentialAndForceMagnitudeD ();
 
+      void calculateForceAndVirialContributions(int i, int j, int k, int l);
       //This function is called by InteractionCalculatorA. Sice calculateInteractionA only adds to
       // the potential, only the latter has to be reset to zero
       void resetPotentialToZero();
@@ -59,6 +62,7 @@ class ChainInteractionCalculator : public InteractionCalculator{
 
       double dihedral_ijkl;
       double angle_ijk;
+      double angle_jkl;
       
       bool bond_ij;
       

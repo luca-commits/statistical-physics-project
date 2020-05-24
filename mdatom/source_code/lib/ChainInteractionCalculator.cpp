@@ -38,6 +38,16 @@ std::vector<double> cross(const std::vector<double>& v1, const std::vector<doubl
   return ret;
 }
 
+double[3] cross(const double v1[3], const double v2[3]) {
+  double ret[3];
+  ret[0] = (v1[1] * v2[2] - v1[2] * v2[1]);
+  ret[1] = (v1[2] * v2[0] - v1[0] * v2[2]);
+  ret[2] = (v1[0] * v2[1] - v1[1] * v2[0]);
+  
+  return ret;
+}
+
+
 double norm(int i, const std::vector<double>& pos) {
   return std::sqrt(pos[3*i  ] * pos[3*i  ] +
                    pos[3*i+1] * pos[3*i+1] +
@@ -62,6 +72,27 @@ void ChainInteractionCalculator::calculateAngle(int i, int j, int k, const std::
   double r_jk = dist(j, k, positions);
   
   angle_ijk = std::acos((r_ij * r_ij + r_jk * r_jk - r_ik * r_ik) / (2 * r_ij * r_jk));
+}
+
+
+void ChainInteractionCalculator::calculateSecondAngle(int i, int j, int k, const std::vector<double>& positions,
+                          const std::vector<std::vector<bool>>& bonds) {
+    
+  if (i == j || i == k || j == k) {
+    angle_ijk = 0;
+    return;
+  }
+  
+  if (!bonds[i][j] || !bonds[j][k]) {
+    angle_ijk = 0;
+    return;
+  }
+  
+  double r_ij = dist(i, j, positions);
+  double r_ik = dist(i, k, positions);
+  double r_jk = dist(j, k, positions);
+  
+  angle_jkl = std::acos((r_ij * r_ij + r_jk * r_jk - r_ik * r_ik) / (2 * r_ij * r_jk));
 }
 
 ChainInteractionCalculator::ChainInteractionCalculator(const MDParameters& parameters) 
@@ -141,14 +172,25 @@ void ChainInteractionCalculator::calculateD (const std::vector<double>& position
 
 void ChainInteractionCalculator::calculateInteractionD(int i, int j, int k, int l, 
                                                        const std::vector<double>& positions,
-                                                       const std::vector<std::vector<bool>>& bonds){
+                                                       const std::vector<std::vector<bool>>& bonds,
+                                                       const std::vector<double>& forces){
     applyPeriodicBoundaryConditions(i, j, k, l, positions);
     calculateSquaredDistance();
     calculateDihedral();
-    calculatePotentialAndForceMagnitudeD();
-    potentilalEnergy += eij;
-    calculateForceAndVirialContributionsD();
+    calculateAngle(i, j, k, positions, bonds);
+    calculateSecondAngle(j, k, l, positions, bonds);
+    calculateForceAndVirialContributionsD(i, j, k, l, forces, positions);
 }
+
+void ChainInteractionCalculator::calculateForceAndVirialContributionsD(int i, int j, int k, int l,
+                                                                       std::vector<double>& forces
+                                                                       std::vector<double>& positions){
+    double forcea[3];
+    double forceb[3];
+    double forcec[3];
+    double forced[3];
+    double p1_strich[3] = cross(-xij, xjk);
+                
 
 void ChainInteractionCalculator::calculateInteractionA(int i, const std::vector<double>& positions, 
                                                               const std::vector<std::vector<bool>>& bonds){
@@ -197,9 +239,7 @@ void ChainInteractionCalculator::calculateInteraction(int i, int j, const std::v
         potentialEnergy += eij;
         
     }
-    
     calculateForceAndVirialContributions(i, j, forces);
-    
     radialDistribution.addPairAtSquaredDistance(rij2);
 }
 
@@ -219,6 +259,7 @@ void ChainInteractionCalculator::calculatePotentialAndForceMagnitude() {
 
       // std::cout << "LJ-contribution to energy: " << eij << std::endl;
 }
+
 
 void ChainInteractionCalculator::initializeValues() {
     sig6 = par.sigmaLJ * par.sigmaLJ;
