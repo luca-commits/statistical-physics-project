@@ -158,7 +158,7 @@ void ChainInteractionCalculator::calculateInteractionA(int i, const std::vector<
                                                               const std::vector<std::vector<bool>>& bonds,
                                                               std::vector<double>& forces){
     if (bonds[i-1][i] && bonds[i][i+1]) {
-      calculateAngle(i-1, i, i + 1, positions, bonds);
+      calculateAngle(i-1, i, i+1, positions, bonds);
 
       // Calculate forces for every atom part of angle in every direction (x, y, z)
       std::vector<double> v_ba = connect(i, i-1, positions);
@@ -168,17 +168,15 @@ void ChainInteractionCalculator::calculateInteractionA(int i, const std::vector<
       std::vector<double> v_baxbc = cross(v_ba, v_bc);
 
       std::vector<double> pa = cross(v_ba, v_baxbc);
-      std::vector<double> pb = cross(v_cb, v_baxbc);
+      std::vector<double> pc = cross(v_cb, v_baxbc);
 
       for (int m = 0; m < 3; m++) {
         dfi[m] = -2 * ka * (angle_ijk - theta0) / (norm(0, pa) * dist(i-1, i, positions)) * pa[m];
-        dfk[m] = -2 * ka * (angle_ijk - theta0) / (norm(0, pb) * dist(i, i+1, positions)) * pb[m];
+        dfk[m] = -2 * ka * (angle_ijk - theta0) / (norm(0, pb) * dist(i, i+1, positions)) * pc[m];
         dfj[m] = -dfi[m] - dfk[m];
 
         std::cout << angle_ijk << " " << pa[m] << " " << pb[m] << std::endl;
-
       }
-
 
       calculatePotentialAndForceMagnitudeA();
       // std::cout << "angle contribution to pot energy: " << ei << " angle: " << angle_ijk << std::endl;
@@ -189,7 +187,6 @@ void ChainInteractionCalculator::calculateInteractionA(int i, const std::vector<
 
 void ChainInteractionCalculator::calculatePotentialAndForceMagnitudeA(){
     ei = ka * std::pow((angle_ijk - theta0), 2);
-
 }
 
 void ChainInteractionCalculator::calculateForceAndVirialContributionsA(int i, int j, int k, const std::vector<double>& pos,
