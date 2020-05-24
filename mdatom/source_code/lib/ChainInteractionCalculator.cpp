@@ -188,7 +188,7 @@ void ChainInteractionCalculator::calculateInteractionD(int i, int j, int k, int 
                                         std::cos(1 * dihedral_ijkl - gamma));
           
           potentialEnergy += E_pot_dihedral;
-          std::cout << "dihedral contribution to energy: " << E_pot_dihedral << " dihedral angle: " << dihedral_ijkl << std::endl;
+          // std::cout << "dihedral contribution to energy: " << E_pot_dihedral << " dihedral angle: " << dihedral_ijkl << std::endl;
     }
     
     calculateForceAndVirialContributionsD(i, j, k, l, forces, positions);
@@ -216,7 +216,7 @@ void ChainInteractionCalculator::calculateForceAndVirialContributionsD(int i, in
     double norm_p1_strich = std::sqrt(p1_strich[0] * p1_strich[0] + 
                                       p1_strich[1] * p1_strich[1] + 
                                       p1_strich[2] * p1_strich[2]);
-    p2_strich = cross(neg_xjk, xkl);
+    p2_strich = cross(xkl, neg_xjk);
     double norm_p2_strich = std::sqrt(p2_strich[0] * p2_strich[0] + 
                                       p2_strich[1] * p2_strich[1] + 
                                       p2_strich[2] * p2_strich[2]);
@@ -229,15 +229,15 @@ void ChainInteractionCalculator::calculateForceAndVirialContributionsD(int i, in
     }
     
     double coeff_a = 1/(std::sqrt(rij2) * std::sin(angle_ijk))*Vn*(std::sin(dihedral_ijkl) +
-                                                                         2*std::sin(2*dihedral_ijkl) +
-                                                                         3*std::sin(3*dihedral_ijkl));
-                                                                         
-    double coeff_b = 1/(std::sqrt(rkl2) * std::sin(angle_jkl))*Vn*(std::sin(dihedral_ijkl) +
-                                                                         2*std::sin(2*dihedral_ijkl) +
-                                                                         3*std::sin(3*dihedral_ijkl));
+                                                                   2*std::sin(2*dihedral_ijkl) +
+                                                                   3*std::sin(3*dihedral_ijkl));
+    
+    double coeff_d = 1/(std::sqrt(rkl2) * std::sin(angle_jkl))*Vn*(std::sin(dihedral_ijkl) +
+                                                                   2*std::sin(2*dihedral_ijkl) +
+                                                                   3*std::sin(3*dihedral_ijkl));
     for (int m = 0; m < 3; ++m){
         forcea[m] = coeff_a * p1[m];
-        forceb[m] = coeff_b * p2[m];
+        forced[m] = coeff_d * p2[m];
     }
     
     //compute force fc
@@ -259,7 +259,7 @@ void ChainInteractionCalculator::calculateForceAndVirialContributionsD(int i, in
   
     first_term = cross(oc, forced);
     second_term = cross(xkl, forced);
-    third_term = cross(neg_xjk, forcea);
+    third_term = cross(neg_xij, forcea);
     for(int m = 0; m < 3; ++m){
         second_term[m] /= 2.;
         third_term[m] /= 2.;
@@ -274,11 +274,11 @@ void ChainInteractionCalculator::calculateForceAndVirialContributionsD(int i, in
     tc_x_oc = cross(tc, oc);
     //now compute fc
     for(int m = 0; m < 3; ++m){
-        tc[m] = coeff_c * tc_x_oc[m];
+        forcec[m] = coeff_c * tc_x_oc[m];
     }
     
     for(int m = 0; m < 3; ++m){
-        forcec[m] = -forcea[m] -forceb[m] - forcec[m];
+        forceb[m] = -forcea[m] - forcec[m] - forced[m];
     }
 
     //now add the forces to the right places in the forces vector
@@ -288,10 +288,10 @@ void ChainInteractionCalculator::calculateForceAndVirialContributionsD(int i, in
     int l3 = 3 * l;
 
     for (int m = 0; m < 3; ++m){
-        forces[i3 + m] += forcea[m];
-        forces[j3 + m] += forceb[m];
-        forces[k3 + m] += forcec[m];
-        forces[l3 + m] += forced[m];
+        forces[i3 + m] -= forcea[m];
+        forces[j3 + m] -= forceb[m];
+        forces[k3 + m] -= forcec[m];
+        forces[l3 + m] -= forced[m];
     }///fehlt nocht virial
 }
     
