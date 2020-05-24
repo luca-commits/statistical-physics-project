@@ -1,4 +1,4 @@
-#include "ChainInteractionCalculator.h"
+
 #include <algorithm>
 #include <exception>
 #include <cmath>
@@ -186,11 +186,33 @@ void ChainInteractionCalculator::calculateForceAndVirialContributionsD(int i, in
                                                                        std::vector<double>& forces
                                                                        std::vector<double>& positions){
     double forcea[3];
-    double forceb[3];
+    double forceb[3];                                                                                ////////////////////////
     double forcec[3];
     double forced[3];
-    double p1_strich[3] = cross(-xij, xjk);
-                
+    double neg_xij[3];
+    double neg_xjk[3];
+    for(int i = 0; i < 3; ++i){
+        neg_xij[i] = -xij[i];
+        nex_xjk[i] = -xjk[i];
+    }
+    double p1_strich[3] = cross(neg_xij, xjk);
+    double norm_p1_strich = std::sqrt(p1_strich[0] * p1_strich[0] + 
+                                      p1_strich[1] * p1_strich[1] + p1_strich[2] * p1_strich[2]);
+    double p2_strich[3] = cross(neg_xjk, xkl);
+    double norm_p2strich = std::sqrt(p2_strich[0] * p2_strich[0] + 
+                                      p2_strich[1] * p2_strich[1] + p2_strich[2] * p2_strich[2]);
+    double p1[3];
+    double p2[3];
+    for(int i = 0; i < 3; ++i){
+        p1[i] = p1_strich[i] / norm_p1_strich[i];
+        p2[i] = p2_strich[i] / norm_p2strich[i];
+    }
+    double coeff_a = 0.5 * 1/(std::sqrt(xij2) * std::sin(angle_ijk)*Vn)*(std::sin(dihedral_ijkl) +
+                                                                         2*std::sin(2*dihedral_ijkl) +
+                                                                         3*std::sin(3*dihedral_ijkl));
+    double coeff_b = 0.5 * 1/(std::sqrt(xkl2) * std::sin(angle_jkl)*Vn)*(std::sin(dihedral_ijkl) +
+                                                                         2*std::sin(2*dihedral_ijkl) +
+                                                                         3*std::sin(3*dihedral_ijkl));
 
 void ChainInteractionCalculator::calculateInteractionA(int i, const std::vector<double>& positions, 
                                                               const std::vector<std::vector<bool>>& bonds){
