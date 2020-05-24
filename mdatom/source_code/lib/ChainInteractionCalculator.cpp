@@ -38,7 +38,7 @@ std::vector<double> cross(const std::vector<double>& v1, const std::vector<doubl
   return ret;
 }
 
-double[3] cross(const double v1[3], const double v2[3]) {
+double cross(const double v1[3], const double v2[3]) {
   double ret[3];
   ret[0] = (v1[1] * v2[2] - v1[2] * v2[1]);
   ret[1] = (v1[2] * v2[0] - v1[0] * v2[2]);
@@ -186,7 +186,7 @@ void ChainInteractionCalculator::calculateForceAndVirialContributionsD(int i, in
                                                                        std::vector<double>& forces
                                                                        std::vector<double>& positions){
     double forcea[3];
-    double forceb[3];                                                                                ////////////////////////
+    double forceb[3];                                                                               
     double forcec[3];
     double forced[3];
     double neg_xij[3];
@@ -213,6 +213,52 @@ void ChainInteractionCalculator::calculateForceAndVirialContributionsD(int i, in
     double coeff_b = 0.5 * 1/(std::sqrt(xkl2) * std::sin(angle_jkl)*Vn)*(std::sin(dihedral_ijkl) +
                                                                          2*std::sin(2*dihedral_ijkl) +
                                                                          3*std::sin(3*dihedral_ijkl));
+    for(int i = 0; i < 3; ++i){
+        forcea[i] = coeff_a * p1[i];
+        forceb[i] = coeff_b * p2[i];
+    }
+    
+    //compute force fc
+    double oc[3];
+    for(int i = 0; i < 3; ++i){
+        oc[i] = xjk[i]/2;
+    }
+    
+    double norm_oc2;
+    for(int i; i < 3; ++i)
+        norm_oc2 += oc[i] * oc[i];
+
+    double coeff_c = 1 / norm_oc2;
+    
+    //now all the computations needed for tc
+    double first_term[3];
+    double second_term[3];
+    double third_term[3];
+                                                                                                           //////////////////////// 
+    first_term = cross(oc, forced);
+    second_term = cross(xkl, forced);
+    third_term = cross(neg_xjk, forcea);
+    for(int i = 0; i < 3; ++i){
+        second_term[i] /= 2.;
+        third_term[i] /= 2.;
+    }
+    //now compute tc
+    for(int i = 0; i < 3; ++i){
+        tc[i] = -(first_term[i] + second_term[i] + third_term[i]);
+    }
+    
+    double tc_x_oc[3] = cross(tc, oc)
+    //now compute fc
+    for(int i = 0; i < 3; ++i){
+        tc[i] = coeff_c * tc_x_oc;
+    }
+    
+    for(int i = 0; i < 3; ++i){
+        fc[i] = -fa[i] -fb[i] - fc[i];
+    }
+
+
+    
 
 void ChainInteractionCalculator::calculateInteractionA(int i, const std::vector<double>& positions, 
                                                               const std::vector<std::vector<bool>>& bonds){
