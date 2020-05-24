@@ -174,7 +174,7 @@ void ChainInteractionCalculator::calculateInteractionD(int i, int j, int k, int 
                                                        const std::vector<double>& positions,
                                                        const std::vector<std::vector<bool>>& bonds,
                                                        const std::vector<double>& forces){
-    applyPeriodicBoundaryConditions(i, j, k, l, positions);
+    applyPeriodicBoundaryConditionsD(i, j, k, l, positions);
     calculateSquaredDistance();
     calculateDihedral();
     calculateAngle(i, j, k, positions, bonds);
@@ -191,9 +191,9 @@ void ChainInteractionCalculator::calculateForceAndVirialContributionsD(int i, in
     double forced[3];
     double neg_xij[3];
     double neg_xjk[3];
-    for(int i = 0; i < 3; ++i){
-        neg_xij[i] = -xij[i];
-        nex_xjk[i] = -xjk[i];
+    for(int m = 0; m < 3; ++m){
+        neg_xij[m] = -xij[m];
+        nex_xjk[m] = -xjk[m];
     }
     double p1_strich[3] = cross(neg_xij, xjk);
     double norm_p1_strich = std::sqrt(p1_strich[0] * p1_strich[0] + 
@@ -203,9 +203,9 @@ void ChainInteractionCalculator::calculateForceAndVirialContributionsD(int i, in
                                       p2_strich[1] * p2_strich[1] + p2_strich[2] * p2_strich[2]);
     double p1[3];
     double p2[3];
-    for(int i = 0; i < 3; ++i){
-        p1[i] = p1_strich[i] / norm_p1_strich[i];
-        p2[i] = p2_strich[i] / norm_p2strich[i];
+    for(int m = 0; m < 3; ++m){
+        p1[m] = p1_strich[i] / norm_p1_strich[m];
+        p2[m] = p2_strich[m] / norm_p2strich[m];
     }
     double coeff_a = 0.5 * 1/(std::sqrt(xij2) * std::sin(angle_ijk)*Vn)*(std::sin(dihedral_ijkl) +
                                                                          2*std::sin(2*dihedral_ijkl) +
@@ -213,20 +213,20 @@ void ChainInteractionCalculator::calculateForceAndVirialContributionsD(int i, in
     double coeff_b = 0.5 * 1/(std::sqrt(xkl2) * std::sin(angle_jkl)*Vn)*(std::sin(dihedral_ijkl) +
                                                                          2*std::sin(2*dihedral_ijkl) +
                                                                          3*std::sin(3*dihedral_ijkl));
-    for(int i = 0; i < 3; ++i){
-        forcea[i] = coeff_a * p1[i];
-        forceb[i] = coeff_b * p2[i];
+    for(int m = 0; m < 3; ++m){
+        forcea[m] = coeff_a * p1[m];
+        forceb[m] = coeff_b * p2[m];
     }
     
     //compute force fc
     double oc[3];
-    for(int i = 0; i < 3; ++i){
-        oc[i] = xjk[i]/2;
+    for(int m = 0; i < 3; ++m){
+        oc[m] = xjk[m]/2;
     }
     
     double norm_oc2;
-    for(int i; i < 3; ++i)
-        norm_oc2 += oc[i] * oc[i];
+    for(int m; m < 3; ++m)
+        norm_oc2 += oc[m] * oc[m];
 
     double coeff_c = 1 / norm_oc2;
     
@@ -238,26 +238,39 @@ void ChainInteractionCalculator::calculateForceAndVirialContributionsD(int i, in
     first_term = cross(oc, forced);
     second_term = cross(xkl, forced);
     third_term = cross(neg_xjk, forcea);
-    for(int i = 0; i < 3; ++i){
-        second_term[i] /= 2.;
-        third_term[i] /= 2.;
+    for(int m = 0; m < 3; ++m){
+        second_term[m] /= 2.;
+        third_term[m] /= 2.;
     }
     //now compute tc
-    for(int i = 0; i < 3; ++i){
-        tc[i] = -(first_term[i] + second_term[i] + third_term[i]);
+    for(int m = 0; m < 3; ++m){
+        tc[m] = -(first_term[m] + second_term[m] + third_term[m]);
     }
     
     double tc_x_oc[3] = cross(tc, oc)
     //now compute fc
-    for(int i = 0; i < 3; ++i){
-        tc[i] = coeff_c * tc_x_oc;
+    for(int m = 0; m < 3; ++m){
+        tc[m] = coeff_c * tc_x_oc;
     }
     
-    for(int i = 0; i < 3; ++i){
-        fc[i] = -fa[i] -fb[i] - fc[i];
+    for(int m = 0; m < 3; ++m){
+        fc[m] = -fa[m] -fb[m] - fc[m];
     }
 
+    //now add the forces to the right places in the forces vector
+    i3 = 3 * i;
+    j3 = 3 * j;
+    k3 = 3 * k;
+    l3 = 3 * l;
 
+    for (int m = 0; m < 3; ++i){
+        forces[i3 + m] += forcea;
+        forces[j3 + m] += forceb;
+        forces[k3 + m] += forcec;
+        forces[l3 + m] += forcec;
+    }///fehlt nocht virial
+}
+    
     
 
 void ChainInteractionCalculator::calculateInteractionA(int i, const std::vector<double>& positions, 
