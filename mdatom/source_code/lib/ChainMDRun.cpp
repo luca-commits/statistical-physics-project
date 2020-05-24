@@ -4,7 +4,7 @@
 #include "TrajectoryFileWriter.h"
 #include <cmath>
 
-ChainMDRun::ChainMDRun(const MDParameters& parameters, 
+ChainMDRun::ChainMDRun(const MDParameters& parameters,
   MDRunOutput& out, TrajectoryFileWriter& trajectoryFileWriter)
   : MDRun(parameters, out, trajectoryFileWriter),
     chainForceCalculator(parameters) {
@@ -20,7 +20,7 @@ void ChainMDRun::performStep(std::vector<double> &positions, std::vector<double>
    * and contribution to the radial distribution function
    */
   chainForceCalculator.calculate(positions, bonds, forces);
-  radialDistribution.addInstantaneousDistribution(forceCalculator.getInstantaneousRadialDistribution());
+  radialDistribution.addInstantaneousDistribution(chainForceCalculator.getInstantaneousRadialDistribution());
   double vir = chainForceCalculator.getVirial();
   properties[2] = chainForceCalculator.getPotentialEnergy();
   properties[3] = vir;
