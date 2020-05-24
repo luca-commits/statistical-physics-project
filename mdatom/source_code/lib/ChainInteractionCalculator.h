@@ -73,8 +73,8 @@ class ChainInteractionCalculator : public InteractionCalculator{
 
       double ei; //potential due to atom i
 
-      double xjk[3];
-      double xkl[3];
+      std::vector<double> xjk;
+      std::vector<double> xkl;
 
       double rjk2;
       double rkl2;

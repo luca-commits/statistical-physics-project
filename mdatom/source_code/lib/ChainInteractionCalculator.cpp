@@ -97,7 +97,8 @@ void ChainInteractionCalculator::calculateSecondAngle(int i, int j, int k, const
 }
 
 ChainInteractionCalculator::ChainInteractionCalculator(const MDParameters& parameters) 
-  : InteractionCalculator::InteractionCalculator(parameters) {
+  : InteractionCalculator::InteractionCalculator(parameters),
+    xjk(3), xkl(3) {
   type = parameters.chainMdType;
 }
 
@@ -141,16 +142,14 @@ void ChainInteractionCalculator::calculate (std::vector<double>& positions, cons
     initializeValues();
    
 
-    if(par.chainMdType == ChainSimType::complete){
-         calculateA(positions, bonds);
-    }   
-
-
-    calculateD(positions,  bonds, forces);    
+    if (par.chainMdType == ChainSimType::complete){
+         // calculateA(positions, bonds);
+         calculateD(positions,  bonds, forces);
+    }
 
     for (int i = 0; i < par.numberAtoms - 1; i++) {
         for (int j = i + 1; j < par.numberAtoms; j++) {
-            calculateInteraction(i, j, positions, bonds, forces);
+            // calculateInteraction(i, j, positions, bonds, forces);
         }
     }
     virial /= 2.;
@@ -167,7 +166,7 @@ void ChainInteractionCalculator::calculateA (const std::vector<double>& position
 void ChainInteractionCalculator::calculateD (std::vector<double>& positions,
                                             const std::vector<std::vector<bool>> bonds,
                                             std::vector<double>& forces){
-    for(int i = 1; i < par.numberAtoms -2; ++i){
+    for(int i = 1; i < par.numberAtoms - 2; ++i){
         calculateInteractionD(i-1, i, i+1, i+2, positions, bonds, forces);
     }
 }
@@ -181,41 +180,59 @@ void ChainInteractionCalculator::calculateInteractionD(int i, int j, int k, int 
     calculateDihedral(i,j,k,l, positions, bonds);
     calculateAngle(i, j, k, positions, bonds);
     calculateSecondAngle(j, k, l, positions, bonds);
+    
+    if (k == j+1 && k < par.numberAtoms && j > 0 && bonds[j][k]) {
+          double E_pot_dihedral = Vn * (4. + 
+                                        std::cos(3 * dihedral_ijkl - gamma) -
+                                        std::cos(2 * dihedral_ijkl - gamma) +
+                                        std::cos(1 * dihedral_ijkl - gamma));
+          
+          potentialEnergy += E_pot_dihedral;
+          std::cout << "dihedral contribution to energy: " << E_pot_dihedral << " dihedral angle: " << dihedral_ijkl << std::endl;
+    }
+    
     calculateForceAndVirialContributionsD(i, j, k, l, forces, positions);
 }
 
 void ChainInteractionCalculator::calculateForceAndVirialContributionsD(int i, int j, int k, int l,
                                                                        std::vector<double>& forces,
                                                                        std::vector<double>& positions){
-    double forcea[3];
-    double forceb[3];                                                                               
-    double forcec[3];
-    double forced[3];
-    double neg_xij[3];
-    double neg_xjk[3];
+    std::vector<double> forcea(3);
+    std::vector<double> forceb(3);
+    std::vector<double> forcec(3);
+    std::vector<double> forced(3);
+    std::vector<double> neg_xij(3);
+    std::vector<double> neg_xjk(3);
+    
     for(int m = 0; m < 3; ++m){
         neg_xij[m] = -xij[m];
         neg_xjk[m] = -xjk[m];
     }
 
-    double* p1_strich = new double[3];
-    double* p2_strich = new double[3];
-    p1_strich = cross(neg_xij, xjk, p1_strich);
+    std::vector<double> p1_strich(3);
+    std::vector<double> p2_strich(3);
+    
+    p1_strich = cross(neg_xij, xjk);
     double norm_p1_strich = std::sqrt(p1_strich[0] * p1_strich[0] + 
-                                      p1_strich[1] * p1_strich[1] + p1_strich[2] * p1_strich[2]);
-    p2_strich = cross(neg_xjk, xkl, p2_strich);
-    double norm_p2strich = std::sqrt(p2_strich[0] * p2_strich[0] + 
-                                      p2_strich[1] * p2_strich[1] + p2_strich[2] * p2_strich[2]);
-    double p1[3];
-    double p2[3];
-    for(int m = 0; m < 3; ++m){
-        p1[m] = p1_strich[i] / norm_p1_strich;
-        p2[m] = p2_strich[m] / norm_p2strich;
+                                      p1_strich[1] * p1_strich[1] + 
+                                      p1_strich[2] * p1_strich[2]);
+    p2_strich = cross(neg_xjk, xkl);
+    double norm_p2_strich = std::sqrt(p2_strich[0] * p2_strich[0] + 
+                                      p2_strich[1] * p2_strich[1] + 
+                                      p2_strich[2] * p2_strich[2]);
+    
+    std::vector<double> p1(3);
+    std::vector<double> p2(3);
+    for (int m = 0; m < 3; ++m){
+        p1[m] = p1_strich[m] / norm_p1_strich;
+        p2[m] = p2_strich[m] / norm_p2_strich;
     }
-    double coeff_a = 0.5 * 1/(std::sqrt(rij2) * std::sin(angle_ijk)*Vn)*(std::sin(dihedral_ijkl) +
+    
+    double coeff_a = 1/(std::sqrt(rij2) * std::sin(angle_ijk))*Vn*(std::sin(dihedral_ijkl) +
                                                                          2*std::sin(2*dihedral_ijkl) +
                                                                          3*std::sin(3*dihedral_ijkl));
-    double coeff_b = 0.5 * 1/(std::sqrt(rkl2) * std::sin(angle_jkl)*Vn)*(std::sin(dihedral_ijkl) +
+                                                                         
+    double coeff_b = 1/(std::sqrt(rkl2) * std::sin(angle_jkl))*Vn*(std::sin(dihedral_ijkl) +
                                                                          2*std::sin(2*dihedral_ijkl) +
                                                                          3*std::sin(3*dihedral_ijkl));
     for (int m = 0; m < 3; ++m){
@@ -224,37 +241,37 @@ void ChainInteractionCalculator::calculateForceAndVirialContributionsD(int i, in
     }
     
     //compute force fc
-    double oc[3];
-    for(int m = 0; i < 3; ++m){
+    std::vector<double> oc(3);
+    for (int m = 0; m < 3; ++m){
         oc[m] = xjk[m]/2;
     }
     
     double norm_oc2;
-    for(int m; m < 3; ++m)
+    for (int m = 0; m < 3; ++m)
         norm_oc2 += oc[m] * oc[m];
 
     double coeff_c = 1 / norm_oc2;
     
     //now all the computations needed for tc
-    double* first_term = new double[3];
-    double* second_term = new double[3];
-    double* third_term = new double[3];
+    std::vector<double> first_term(3);
+    std::vector<double> second_term(3);
+    std::vector<double> third_term(3);
   
-    first_term = cross(oc, forced, first_term);
-    second_term = cross(xkl, forced, second_term);
-    third_term = cross(neg_xjk, forcea, third_term);
+    first_term = cross(oc, forced);
+    second_term = cross(xkl, forced);
+    third_term = cross(neg_xjk, forcea);
     for(int m = 0; m < 3; ++m){
         second_term[m] /= 2.;
         third_term[m] /= 2.;
     }
     //now compute tc
-    double tc[3];
+    std::vector<double> tc(3);
     for(int m = 0; m < 3; ++m){
         tc[m] = -(first_term[m] + second_term[m] + third_term[m]);
     }
     
-    double* tc_x_oc = new double[3];
-    tc_x_oc = cross(tc, oc, tc_x_oc);
+    std::vector<double> tc_x_oc(3);
+    tc_x_oc = cross(tc, oc);
     //now compute fc
     for(int m = 0; m < 3; ++m){
         tc[m] = coeff_c * tc_x_oc[m];
@@ -270,11 +287,11 @@ void ChainInteractionCalculator::calculateForceAndVirialContributionsD(int i, in
     int k3 = 3 * k;
     int l3 = 3 * l;
 
-    for (int m = 0; m < 3; ++i){
+    for (int m = 0; m < 3; ++m){
         forces[i3 + m] += forcea[m];
         forces[j3 + m] += forceb[m];
         forces[k3 + m] += forcec[m];
-        forces[l3 + m] += forcec[m];
+        forces[l3 + m] += forced[m];
     }///fehlt nocht virial
 }
     
@@ -314,12 +331,6 @@ void ChainInteractionCalculator::calculateInteraction(int i, int j, const std::v
           
           std::cout << "bond contribution to energy:" << val1 << " dist to eq: " << (std::sqrt(rij2) - r0) << std::endl;
       }
-      
-      if (j == i+1 && j < par.numberAtoms && i > 0)
-          calculateDihedral(i-1, i, j, j+1, positions, bonds);
-          double val2 = Vn * 3. * (1. + std::cos(3 * dihedral_ijkl - gamma));
-          // potentialEnergy += val2;
-          /// std::cout << "dihedral contribution to energy: " << val2 << " dihedral angle: " << dihedral_ijkl << std::endl;
     }
     
     if (rij2 < rcutf2) {
