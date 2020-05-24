@@ -104,12 +104,17 @@ void ChainInteractionCalculator::calculateDihedral (int i, int j, int k, int l, 
 }
 
 void ChainInteractionCalculator::calculate(const std::vector<double>& positions, const std::vector<std::vector<bool>>& bonds, std::vector<double>& forces) {
+    
     resetVariablesToZero(forces);
     initializeValues();
-    
+   
+
     if(par.chainMdType == ChainSimType::complete){
-        // calculateA(positions, bonds);
-    }        
+         calculateA(positions, bonds);
+    }   
+
+
+    calculateD(const std::vector<double>& positions, const std::vector<bool>& bonds);    
 
     for (int i = 0; i < par.numberAtoms - 1; i++) {
         for (int j = i + 1; j < par.numberAtoms; j++) {
@@ -125,6 +130,24 @@ void ChainInteractionCalculator::calculateA (const std::vector<double>& position
     for(int i = 1; i < par.numberAtoms - 1; ++i){
         calculateInteractionA(i, positions, bonds);
     }
+}
+
+void ChainInteractionCalculator::calculateD (const std::vector<double>& positions,
+                                            const std::vector<std::vector<bool>> bonds){
+    for(int i = 1; i < par.numberAtoms -2; ++i){
+        calculateInteractionD(i-1, i, i+1, i+2, positions, bonds);
+    }
+}
+
+void ChainInteractionCalculator::calculateInteractionD(int i, int j, int k, int l, 
+                                                       const std::vector<double>& positions,
+                                                       const std::vector<std::vector<bool>>& bonds){
+    applyPeriodicBoundaryConditions(i, j, k, l, positions);
+    calculateSquaredDistance();
+    calculateDihedral();
+    calculatePotentialAndForceMagnitudeD();
+    potentilalEnergy += eij;
+    calculateForceAndVirialContributionsD();
 }
 
 void ChainInteractionCalculator::calculateInteractionA(int i, const std::vector<double>& positions, 
@@ -212,6 +235,31 @@ void ChainInteractionCalculator::initializeValues() {
     kb = 1294.04e2; // kJ / (mol * nm^2)
     theta0 = 1.911; // rad
     r0 = 0.1526; // nm
+}
+
+
+void ChainInteractionCalculator::applyPeriodicBoundaryConditions(int i, int j, int k, int l,
+                                                                 std::vector<double>& positions){
+    int i3 = 3 * i;
+    int j3 = 3 * j;
+    int k3 = 3 * k;
+    int l3 = 3 * l;
+    for (int m = 0; m < 3; ++m){
+          xij[m] = positions[i3 + m] - positions[j3 +m];
+          xjk[m] = positions[j3 + m] - positions[k3 + m];
+          xkl[m] = positions[k3 + m] - positions[l3 + m];
+    }
+}
+
+void ChainInteractionCalculator::calculateSquaredDistance(){
+    rij = 0;
+    rjk = 0;
+    rkl = 0;
+    for(int m = 0; m < 3; ++m){
+        rij2 += xij[m] * xij[m];
+        rjk2 += xjk[m] * xjk[m];
+        rkl2 += xkl[m] * xkl[m];
+    }
 }
 
 

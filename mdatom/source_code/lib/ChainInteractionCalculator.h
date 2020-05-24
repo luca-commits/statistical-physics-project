@@ -26,24 +26,32 @@ class ChainInteractionCalculator : public InteractionCalculator{
       //loops over all atoms and adds angle contributions to E_pot by calling calculateInteractionA
       //only need to loop over one variable since every atom has one angle (correct me if I'm wrong)
       void calculateA (const std::vector<double>& positions, const std::vector<std::vector<bool>> bonds);
+      //loop over dihedral quadrupletts and calculate their contributions:
+      void calculateD (const std::vector<double>& positions, const std::vector<std::vector<bool>> bonds);
       //loops over all bonds and adds bond contributions to E_pot
       void calculateB (const std::vector<double>& positions, const std::vector<std::vector<bool>> bonds);
       //sets the angle by calling calculateAngle, then calls calculatePotentialA
       void calculateInteractionA (int i, const std::vector<double>& positions,
                                   const std::vector<std::vector<bool>>&  bonds);
+      void calculateInteractionD(int i, int j, int k, int l, 
+                                 const std::vector<double>& positions,
+                                 const std::vector<std::vector<bool>>& bonds);
       //calculates only the potential contribution of the angle 
       void calculatePotentialA();
       //set the dihedral angle + does everything that calculateInteraction does (in the base class)
       void calculateInteraction (int i, int j, const std::vector<double>& positions,
                                  const std::vector<std::vector<bool>>& bonds, std::vector<double>& forces);
-      //calculates the potential contribution from Coulomb interaction, bond terms and dihedral terms
+      //calculates the potential contribution from Coulomb interaction and  bond terms
       void calculatePotentialAndForceMagnitude () override;
+      void calculatePotentialAndForceMagnitudeD ();
 
       //This function is called by InteractionCalculatorA. Sice calculateInteractionA only adds to
       // the potential, only the latter has to be reset to zero
       void resetPotentialToZero();
       void initializeValues () override;
-
+      void applyPeriodicBoundaryConditions(int i, int j, int k, int l,
+                                           std::vector<double>& positions);
+      void calculateSquaredDistance() override;
       double Vn;
       double r0;
       double theta0;
@@ -59,6 +67,11 @@ class ChainInteractionCalculator : public InteractionCalculator{
 
       double ei; //potential due to atom i
 
+      double xjk[3];
+      double xkl[3];
+
+      double rjk2;
+      double rkl2;
       ChainSimType type;
 };  
 
