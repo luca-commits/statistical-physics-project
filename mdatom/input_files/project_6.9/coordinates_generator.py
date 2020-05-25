@@ -1,6 +1,6 @@
 n = int(input())
 
-arr = [5, 5, 5]
+arr = [50, 50, 50]
 
 file = open("coords.inp", "w")
 

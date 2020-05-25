@@ -155,26 +155,6 @@ void ChainInteractionCalculator::calculateDihedral (int i, int j, int k, int l, 
   // b3.push_back(pos[3*l+2] - pos[3*k+2]);
   b3 = connect(k, l, pos);
 
-  /*
-  for (int i = 0; i < 3; i++) {
-    std::cout << b1[i] << " ";
-  }
-
-  std::cout << std::endl;
-
-  for (int i = 0; i < 3; i++) {
-    std::cout << b2[i] << " ";
-  }
-
-  std::cout << std::endl;
-
-  for (int i = 0; i < 3; i++) {
-    std::cout << b3[i] << " ";
-  }
-
-  std::cout << std::endl;
-  */
-
   std::vector<double> n1 = cross(b1, b2);
   std::vector<double> n2 = cross(b2, b3);
 
@@ -191,7 +171,7 @@ void ChainInteractionCalculator::calculate (std::vector<double>& positions, cons
     initializeValues();
 
     if (par.chainMdType == ChainSimType::complete) {
-        calculateA(positions, bonds, forces);
+        // calculateA(positions, bonds, forces);
         calculateD(positions, bonds, forces);
         calculateB(positions, bonds, forces);
     } else if (par.chainMdType == ChainSimType::noAngles) {
