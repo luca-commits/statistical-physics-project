@@ -170,10 +170,10 @@ void ChainInteractionCalculator::calculate (std::vector<double>& positions, cons
     if (par.chainMdType == ChainSimType::complete) {
         calculateA(positions, bonds, forces);
         calculateD(positions, bonds, forces);
-        // calculateB(positions, bonds, forces);
+         calculateB(positions, bonds, forces);
     } else if (par.chainMdType == ChainSimType::noAngles) {
         calculateD(positions, bonds, forces);
-        // calculateB(positions, bonds, forces);
+         calculateB(positions, bonds, forces);
     }
 
     for (int i = 0; i < par.numberAtoms - 1; i++) {
@@ -354,7 +354,7 @@ void ChainInteractionCalculator::calculateInteractionA(int i, const std::vector<
         dfk[m] = -2 * ka * (angle_ijk - theta0) / (norm(0, pc) * dist(i, i+1, positions)) * pc[m];
         dfj[m] = -dfi[m] - dfk[m];
 
-        std::cout << angle_ijk << " " << pa[m] << " " << pc[m] << std::endl;
+  //      std::cout << angle_ijk << " " << pa[m] << " " << pc[m] << std::endl;
       }
 
       calculatePotentialAndForceMagnitudeA();
@@ -398,11 +398,11 @@ void ChainInteractionCalculator::calculateInteractionB(int i, int j, const std::
         if (bond_ij) {
             double val1 = kb * std::pow(std::sqrt(rij2) - r0, 2);
             potentialEnergy += val1;
-            dij -= 2 * kb * (std::sqrt(rij2) - r0);
+            dij -= 2 * kb * (std::sqrt(rij2) - r0)/std::sqrt(rij2);
 
-            std::cout << "dij from bond  " << 2 * kb * (std::sqrt(rij2) - r0) << std::endl;
+            //std::cout << "dij from bond  " << 2 * kb * (std::sqrt(rij2) - r0) << std::endl;
 
-            std::cout << "bond contribution to energy:" << val1 << " dist to eq: " << (std::sqrt(rij2) - r0) << std::endl;
+            //std::cout << "bond contribution to energy:" << val1 << " dist to eq: " << (std::sqrt(rij2) - r0) << std::endl;
         }
 
         int i3 = 3 * i;
@@ -446,7 +446,7 @@ void ChainInteractionCalculator::calculatePotentialAndForceMagnitude() {
     // derived with WolframAlpha
     dij += 6. * (crh + crhh) * riji6 * riji2;
 
-    std::cout << "dij from LJ  " << 6. * (crh + crhh) * riji6 * riji2 << std::endl;
+    //std::cout << "dij from LJ  " << 6. * (crh + crhh) * riji6 * riji2 << std::endl;
     // std::cout << "LJ-contribution to energy: " << eij << std::endl;
 }
 
