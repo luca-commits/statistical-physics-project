@@ -138,19 +138,42 @@ void ChainInteractionCalculator::calculateDihedral (int i, int j, int k, int l, 
   // Calculations taken from
   // https://math.stackexchange.com/questions/47059/how-do-i-calculate-a-dihedral-angle-given-cartesian-coordinates
   std::vector<double> b1;
-  b1.push_back(pos[3*j  ] - pos[3*i  ]);
-  b1.push_back(pos[3*j+1] - pos[3*i+1]);
-  b1.push_back(pos[3*j+2] - pos[3*i+2]);
+  // b1.push_back(pos[3*j  ] - pos[3*i  ]);
+  // b1.push_back(pos[3*j+1] - pos[3*i+1]);
+  // b1.push_back(pos[3*j+2] - pos[3*i+2]);
+  b1 = connect(i, j, pos);
 
   std::vector<double> b2;
-  b2.push_back(pos[3*k  ] - pos[3*j  ]);
-  b2.push_back(pos[3*k+1] - pos[3*j+1]);
-  b2.push_back(pos[3*k+2] - pos[3*j+2]);
+  // b2.push_back(pos[3*k  ] - pos[3*j  ]);
+  // b2.push_back(pos[3*k+1] - pos[3*j+1]);
+  // b2.push_back(pos[3*k+2] - pos[3*j+2]);
+  b2 = connect(j, k, pos);
 
   std::vector<double> b3;
-  b3.push_back(pos[3*l  ] - pos[3*k  ]);
-  b3.push_back(pos[3*l+1] - pos[3*k+1]);
-  b3.push_back(pos[3*l+2] - pos[3*k+2]);
+  // b3.push_back(pos[3*l  ] - pos[3*k  ]);
+  // b3.push_back(pos[3*l+1] - pos[3*k+1]);
+  // b3.push_back(pos[3*l+2] - pos[3*k+2]);
+  b3 = connect(k, l, pos);
+
+  /*
+  for (int i = 0; i < 3; i++) {
+    std::cout << b1[i] << " ";
+  }
+
+  std::cout << std::endl;
+
+  for (int i = 0; i < 3; i++) {
+    std::cout << b2[i] << " ";
+  }
+
+  std::cout << std::endl;
+
+  for (int i = 0; i < 3; i++) {
+    std::cout << b3[i] << " ";
+  }
+
+  std::cout << std::endl;
+  */
 
   std::vector<double> n1 = cross(b1, b2);
   std::vector<double> n2 = cross(b2, b3);
@@ -168,9 +191,9 @@ void ChainInteractionCalculator::calculate (std::vector<double>& positions, cons
     initializeValues();
 
     if (par.chainMdType == ChainSimType::complete) {
-        // calculateA(positions, bonds, forces);
+        calculateA(positions, bonds, forces);
         calculateD(positions, bonds, forces);
-        // calculateB(positions, bonds, forces);
+        calculateB(positions, bonds, forces);
     } else if (par.chainMdType == ChainSimType::noAngles) {
         calculateD(positions, bonds, forces);
         calculateB(positions, bonds, forces);
@@ -326,10 +349,10 @@ void ChainInteractionCalculator::calculateForceAndVirialContributionsD(int i, in
     int l3 = 3 * l;
 
     for (int m = 0; m < 3; ++m){
-        forces[i3 + m] -= forcea[m];
-        forces[j3 + m] -= forceb[m];
-        forces[k3 + m] -= forcec[m];
-        forces[l3 + m] -= forced[m];
+        forces[i3 + m] += forcea[m];
+        forces[j3 + m] += forceb[m];
+        forces[k3 + m] += forcec[m];
+        forces[l3 + m] += forced[m];
     }///fehlt nocht virial
 }
 
@@ -401,8 +424,7 @@ void ChainInteractionCalculator::calculateInteractionB(int i, int j, const std::
             dij -= 2 * kb * (std::sqrt(rij2) - r0)/std::sqrt(rij2);
 
             //std::cout << "dij from bond  " << 2 * kb * (std::sqrt(rij2) - r0) << std::endl;
-
-            //std::cout << "bond contribution to energy:" << val1 << " dist to eq: " << (std::sqrt(rij2) - r0) << std::endl;
+            // std::cout << "bond contribution to energy:" << val1 << " dist to eq: " << (std::sqrt(rij2) - r0) << std::endl;
         }
 
         int i3 = 3 * i;
@@ -475,11 +497,21 @@ void ChainInteractionCalculator::applyPeriodicBoundaryConditions(int i, int j, i
     int j3 = 3 * j;
     int k3 = 3 * k;
     int l3 = 3 * l;
+    /*
     for (int m = 0; m < 3; ++m){
           xij[m] = positions[i3 + m] - positions[j3 +m];
           xjk[m] = positions[j3 + m] - positions[k3 + m];
           xkl[m] = positions[k3 + m] - positions[l3 + m];
     }
+    */
+
+    std::vector<double> xij_vec = connect(i, j, positions);
+    for (int i = 0; i < 3; i++) {
+      xij[i] = xij_vec[i];
+    }
+
+    xjk = connect(j, k, positions);
+    xkl = connect(k, l, positions);
 }
 
 void ChainInteractionCalculator::calculateSquaredDistance(){
