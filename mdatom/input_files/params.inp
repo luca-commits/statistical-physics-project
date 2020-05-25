@@ -7,7 +7,7 @@ Test 6, 1000 atoms
 #               NumberMDSteps                InitialTime                   TimeStep
                          1000                          0                     0.0005
 #          InitialTemperature          TargetTemperature    TemperatureCouplingTime
-                         1e-7                       1e-7                        0.1
+                          100                        100                        0.1
 #                  RandomSeed
                      10021988
 #            XVInitialization  CoordInitializationSpread              FinalXVOutput
