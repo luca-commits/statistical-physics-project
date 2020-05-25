@@ -339,10 +339,10 @@ void ChainInteractionCalculator::calculateInteractionA(int i, const std::vector<
 
       for (int m = 0; m < 3; m++) {
         dfi[m] = -2 * ka * (angle_ijk - theta0) / (norm(0, pa) * dist(i-1, i, positions)) * pa[m];
-        dfk[m] = -2 * ka * (angle_ijk - theta0) / (norm(0, pb) * dist(i, i+1, positions)) * pc[m];
+        dfk[m] = -2 * ka * (angle_ijk - theta0) / (norm(0, pc) * dist(i, i+1, positions)) * pc[m];
         dfj[m] = -dfi[m] - dfk[m];
 
-        std::cout << angle_ijk << " " << pa[m] << " " << pb[m] << std::endl;
+        std::cout << angle_ijk << " " << pa[m] << " " << pc[m] << std::endl;
       }
 
       calculatePotentialAndForceMagnitudeA();
