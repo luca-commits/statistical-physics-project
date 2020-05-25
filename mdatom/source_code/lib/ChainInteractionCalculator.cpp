@@ -167,14 +167,18 @@ void ChainInteractionCalculator::calculate (std::vector<double>& positions, cons
     resetVariablesToZero(forces);
     initializeValues();
 
-    if(par.chainMdType == ChainSimType::complete){
+    if (par.chainMdType == ChainSimType::complete) {
         calculateA(positions, bonds, forces);
         calculateD(positions, bonds, forces);
+        // calculateB(positions, bonds, forces);
+    } else if (par.chainMdType == ChainSimType::noAngles) {
+        calculateD(positions, bonds, forces);
+        // calculateB(positions, bonds, forces);
     }
 
     for (int i = 0; i < par.numberAtoms - 1; i++) {
         for (int j = i + 1; j < par.numberAtoms; j++) {
-            // calculateInteraction(i, j, positions, bonds, forces);
+            calculateInteraction(i, j, positions, bonds, forces);
         }
     }
     virial /= 2.;
@@ -182,7 +186,7 @@ void ChainInteractionCalculator::calculate (std::vector<double>& positions, cons
 
 void ChainInteractionCalculator::calculateA (const std::vector<double>& positions,
                                              const std::vector<std::vector<bool>> bonds,
-                                             std::vector<double>& forces){
+                                             std::vector<double>& forces) {
 
     for(int i = 1; i < par.numberAtoms - 1; ++i){
         calculateInteractionA(i, positions, bonds, forces);
@@ -190,10 +194,18 @@ void ChainInteractionCalculator::calculateA (const std::vector<double>& position
 }
 
 void ChainInteractionCalculator::calculateD (std::vector<double>& positions,
-                                            const std::vector<std::vector<bool>> bonds,
-                                            std::vector<double>& forces){
+                                             const std::vector<std::vector<bool>> bonds,
+                                             std::vector<double>& forces) {
     for(int i = 1; i < par.numberAtoms - 2; ++i){
         calculateInteractionD(i-1, i, i+1, i+2, positions, bonds, forces);
+    }
+}
+
+void ChainInteractionCalculator::calculateB (const std::vector<double>& positions,
+                                             const std::vector<std::vector<bool>> bonds,
+                                             std::vector<double>& forces) {
+    for (int i = 1; i < par.numberAtoms - 1; i++) {
+        calculateInteractionB(i, i+1, positions, bonds, forces);
     }
 }
 
@@ -372,6 +384,40 @@ void ChainInteractionCalculator::calculateForceAndVirialContributionsA(int i, in
     }
 }
 
+void ChainInteractionCalculator::calculateInteractionB(int i, int j, const std::vector<double>& pos,
+                                                       const std::vector<std::vector<bool>>& bonds, std::vector<double>& forces) {
+  InteractionCalculator::applyPeriodicBoundaryConditions(i, j, pos);
+  calculateSquaredDistance();
+
+  dij = 0;
+
+    if (type != ChainSimType::noChains) {
+        bond_ij = bonds[i][j];
+
+        // bond and contribution to potential energy
+        if (bond_ij) {
+            double val1 = kb * std::pow(std::sqrt(rij2) - r0, 2);
+            potentialEnergy += val1;
+            dij -= 2 * kb * (std::sqrt(rij2) - r0);
+
+            std::cout << "dij from bond  " << 2 * kb * (std::sqrt(rij2) - r0) << std::endl;
+
+            std::cout << "bond contribution to energy:" << val1 << " dist to eq: " << (std::sqrt(rij2) - r0) << std::endl;
+        }
+
+        int i3 = 3 * i;
+        int j3 = 3 * j;
+
+        for (int m = 0; m < 3; m++) {
+            // Force increment in direction of inter-particle vector
+            //(note: xij[m]/rij is unit vector in inter-particle direction.)
+            double df = xij[m] * dij;
+            forces[i3 + m] += df;
+            forces[j3 + m] -= df;
+            virial -= xij[m] * df;
+        }
+    }
+}
 
 void ChainInteractionCalculator::calculateInteraction(int i, int j, const std::vector<double>& positions,
       const std::vector<std::vector<bool>>& bonds, std::vector<double>& forces) {
@@ -380,26 +426,9 @@ void ChainInteractionCalculator::calculateInteraction(int i, int j, const std::v
 
     dij = 0;
 
-    if (type != ChainSimType::noChains) {
-      bond_ij = bonds[i][j];
-
-
-      // bond and dihedral contribution to potential energy
-      if (bond_ij) {
-          double val1 = kb * std::pow(std::sqrt(rij2) - r0, 2);
-          potentialEnergy += val1;
-          dij -= 2 * kb * (std::sqrt(rij2) - r0);
-
-          std::cout << "dij from bond  " << 2 * kb * (std::sqrt(rij2) - r0) << std::endl;
-
-          std::cout << "bond contribution to energy:" << val1 << " dist to eq: " << (std::sqrt(rij2) - r0) << std::endl;
-      }
-    }
-
     if (rij2 < rcutf2) {
         calculatePotentialAndForceMagnitude();
         potentialEnergy += eij;
-
     }
 
     calculateForceAndVirialContributions(i, j, forces);
@@ -415,13 +444,10 @@ void ChainInteractionCalculator::calculatePotentialAndForceMagnitude() {
     double crhh = crh - 2 * c6; //  L-J potential work variable
     eij= crhh * riji6;
     // derived with WolframAlpha
-    // dij += 12 * par.epsilonLJ * sig6 * (std::pow(rij2, 3) - sig6) / std::pow(rij2, 7);
     dij += 6. * (crh + crhh) * riji6 * riji2;
 
     std::cout << "dij from LJ  " << 6. * (crh + crhh) * riji6 * riji2 << std::endl;
-
-
-      // std::cout << "LJ-contribution to energy: " << eij << std::endl;
+    // std::cout << "LJ-contribution to energy: " << eij << std::endl;
 }
 
 

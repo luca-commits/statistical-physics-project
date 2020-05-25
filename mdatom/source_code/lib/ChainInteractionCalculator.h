@@ -30,10 +30,12 @@ class ChainInteractionCalculator : public InteractionCalculator{
       void calculateA (const std::vector<double>& positions, const std::vector<std::vector<bool>> bonds,
                        std::vector<double>& forces);
       //loop over dihedral quadrupletts and calculate their contributions:
-      void calculateD (std::vector<double>& positions, const std::vector<std::vector<bool>> bonds, std::vector<double>&forces);
+      void calculateD (std::vector<double>& positions, const std::vector<std::vector<bool>> bonds, std::vector<double>& forces);
 
       //loops over all bonds and adds bond contributions to E_pot
-      void calculateB (const std::vector<double>& positions, const std::vector<std::vector<bool>> bonds);
+      void calculateB (const std::vector<double>& positions, const std::vector<std::vector<bool>> bonds, std::vector<double>& forces);
+      void calculateInteractionB(int i, int j, const std::vector<double>& pos,
+                                 const std::vector<std::vector<bool>>& bonds, std::vector<double>& forces);
       //sets the angle by calling calculateAngle, then calls calculatePotentialA
       void calculateInteractionA(int i, const std::vector<double>& positions,
                                  const std::vector<std::vector<bool>>&  bonds,
