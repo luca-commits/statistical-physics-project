@@ -168,12 +168,12 @@ void ChainInteractionCalculator::calculate (std::vector<double>& positions, cons
     initializeValues();
 
     if (par.chainMdType == ChainSimType::complete) {
-        calculateA(positions, bonds, forces);
+        // calculateA(positions, bonds, forces);
         calculateD(positions, bonds, forces);
-         calculateB(positions, bonds, forces);
+        // calculateB(positions, bonds, forces);
     } else if (par.chainMdType == ChainSimType::noAngles) {
         calculateD(positions, bonds, forces);
-         calculateB(positions, bonds, forces);
+        calculateB(positions, bonds, forces);
     }
 
     for (int i = 0; i < par.numberAtoms - 1; i++) {
